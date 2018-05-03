@@ -1,12 +1,21 @@
-scalaVersion := "2.11.6"
+scalaVersion := "2.12.6"
 
 name := "spsc-lite"
 
-libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+
+libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
 
 libraryDependencies += "com.novocode" % "junit-interface" % "0.10" % "test"
 
-// there is a global genVar
-parallelExecution in Test := false
+scalacOptions ++= Seq("-deprecation", "-feature")
+
+//testOptions in Test += Tests.Argument("-oD")
 
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
+
+logBuffered in Test := false
+
+parallelExecution in Test := false
