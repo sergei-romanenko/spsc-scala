@@ -1,8 +1,11 @@
 package spsc
 
 import Algebra._
+
 case class Gen(t: Term, m1: Map[Var, Term], m2: Map[Var, Term])
+
 object MSG {
+
   def msg(t1: Term, t2: Term): Gen = {
     val v = freshVar()
     var g = Gen(v, Map(v -> t1), Map(v -> t2))

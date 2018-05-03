@@ -1,4 +1,5 @@
 package spsc
+
 object Sample {
   
   val target1  = 
@@ -117,7 +118,8 @@ object Sample {
     gElistTail(Ec(exp,elist))=elist;
     """  
   
-  def main(args : Array[String]) : Unit = {
+  def main(args: Array[String]): Unit = {
+
     runBaseSuperCompiler(target7, program7)
     runBaseSuperCompiler(target1, program1)
     runSuperCompiler(target1, program1)
@@ -126,7 +128,7 @@ object Sample {
     runSuperCompiler(target2, program2)
     
     // BaseSuperCompiler will not terminate for input 3
-    // cause generalization is needed
+    // because generalization is needed
     runSuperCompiler(target3, program3)
     
     runBaseSuperCompiler(target4, program4)
@@ -142,7 +144,7 @@ object Sample {
     runSuperCompiler(target8, program8)
   }
   
-  def runSuperCompiler(targetText: String, programText: String) = {
+  def runSuperCompiler(targetText: String, programText: String): Unit = {
     val program = SParsers.parseProg(programText)
     val target = SParsers.parseTerm(targetText)
     val sc = new AdvancedSupercompiler(program)
@@ -155,7 +157,7 @@ object Sample {
     println("-------")
   }
   
-  def runBaseSuperCompiler(targetText: String, programText: String) = {
+  def runBaseSuperCompiler(targetText: String, programText: String): Unit = {
     val program = SParsers.parseProg(programText)
     val target = SParsers.parseTerm(targetText)
     val sc = new BasicSupercompiler(program)

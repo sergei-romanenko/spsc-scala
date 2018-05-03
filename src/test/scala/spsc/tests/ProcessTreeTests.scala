@@ -7,9 +7,9 @@ import spsc._
 
 class ProcessTreeTests {
 
-  var tree : Tree = null
+  var tree: Tree = null
   
-  @Before def setup() : Unit = {
+  @Before def setup(): Unit = {
     tree = Tree.create(Var("r"))
     val r = tree.root
     tree = tree.addChildren(r,List((Var("m1"), null), (Var("m2"), null)))
@@ -19,12 +19,12 @@ class ProcessTreeTests {
     tree = tree.replace(m2, Var("x"))
   }
 
-  @Test def test01PrTreeBuilding() = {
+  @Test def test01PrTreeBuilding(): Unit = {
     assertEquals(
     "{,0:(r,,,[1,4]),1:(m1,,0,[3]),3:(n,,1,[]),4:(x,,0,[])}",
     tree.toString)
   }
 
-  def test02PrTreeLeaves() : Unit =
+  def test02PrTreeLeaves(): Unit =
     assertEquals(List(3,2), tree.leaves map {n => n.nodeId})
 }

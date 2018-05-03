@@ -7,29 +7,29 @@ import spsc._
 
 class HeTests {
 
-  def heTrue(input1 : String, input2 : String) : Unit = {
+  def heTrue(input1: String, input2: String): Unit = {
     val e1 = SParsers.parseTerm(input1)
     val e2 = SParsers.parseTerm(input2)
     assertTrue(he(e1, e2))
   }
 
-  def heFalse(input1 : String, input2 : String) : Unit = {
+  def heFalse(input1: String, input2: String): Unit = {
     val e1 = SParsers.parseTerm(input1)
     val e2 = SParsers.parseTerm(input2)
     assertFalse(he(e1, e2))
   }
 
-  def varAttackTrue(input : String) : Unit = {
+  def varAttackTrue(input: String): Unit = {
     val e = SParsers.parseTerm(input)
     assertTrue(aVarIsUnderAttack(e))
   }
 
-  def varAttackFalse(input : String) : Unit = {
+  def varAttackFalse(input: String): Unit = {
     val e = SParsers.parseTerm(input)
     assertFalse(aVarIsUnderAttack(e))
   }
 
-  @Test def test101VarAttack() : Unit = {
+  @Test def test101VarAttack(): Unit = {
     varAttackTrue("x")
     varAttackFalse("A()")
     varAttackFalse("f(x)")
@@ -39,27 +39,27 @@ class HeTests {
     varAttackFalse("g(f(x))")
   }
 
-  @Test def test201VV() : Unit = {
+  @Test def test201VV(): Unit = {
     heTrue("v1", "v2")
   }
 
-  @Test def test202VF() : Unit = {
+  @Test def test202VF(): Unit = {
     heTrue("v1", "F(v2)")
   }
 
-  @Test def test203FV() : Unit = {
+  @Test def test203FV(): Unit = {
     heFalse("F(v2)", "v1")
   }
 
-  @Test def test204Diving() : Unit = {
+  @Test def test204Diving(): Unit = {
     heTrue("F(v1)", "G(v0,F(H(v2)))")
   }
 
-  @Test def test205Coupling1() : Unit = {
+  @Test def test205Coupling1(): Unit = {
     heTrue("F(v1,G(v2))", "F(H(w1),G(w2))")
   }
 
-  @Test def test206Coupling2() : Unit = {
+  @Test def test206Coupling2(): Unit = {
     heFalse("f(v1)", "g(w1)")
   }
 

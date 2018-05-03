@@ -10,12 +10,14 @@ class BasicSupercompiler(p: Program){
     case GCall(name, Ctr(cname, cargs) :: args) =>
       val g = p.g(name, cname)  
       List((applySubst(Map((g.p.args:::g.args) zip (cargs:::args): _*), g.term), null))
-    case gCall @ GCall(name, (v : Var) :: args) => 
+    case gCall @ GCall(name, (v: Var) :: args) =>
       for (g <- p.gs(name); fp = freshPat(g.p); ctr = Ctr(fp.name, fp.args)) 
-        yield driveExp(applySubst(Map(v -> ctr), gCall)) match 
-          {case (k, _) :: _ => (k, Contraction(v, fp))} 
+        yield driveExp(applySubst(Map(v -> ctr), gCall)) match {
+          case (k, _) :: _ => (k, Contraction(v, fp))
+          case _ => sys.error("BasicSupercompiler")
+        }
     case GCall(name, args) => 
-      driveExp(args(0)) map {case (k, v) => (GCall(name, k :: args.tail), v)}
+      driveExp(args.head) map {case (k, v) => (GCall(name, k :: args.tail), v)}
     case Let(term, bs) => (term, null) :: bs.map {case (_, v) => (v, null)}
   }
  

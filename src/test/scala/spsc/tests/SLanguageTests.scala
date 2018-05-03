@@ -6,11 +6,11 @@ import spsc._
 
 class SLanguageTests {
 
-  def toStringTest(expected : String, e : Term) : Unit = {
-    assertEquals(expected, e.toString())
+  def toStringTest(expected: String, e: Term): Unit = {
+    assertEquals(expected, e.toString)
   }
 
-  @Test def test101StrVarAndCall() : Unit = {
+  @Test def test101StrVarAndCall(): Unit = {
     toStringTest("x", Var("x"))
     toStringTest("A(x,y)", Ctr("A", List(Var("x"), Var("y"))))
     toStringTest("C()", Ctr("C", List()))
@@ -18,14 +18,14 @@ class SLanguageTests {
     toStringTest("gX(x,y)", GCall("gX", List(Var("x"), Var("y"))))
   }
 
-  @Test def test102StrLet() : Unit = {
+  @Test def test102StrLet(): Unit = {
     toStringTest("let x=y in y", Let(Var("y"), List((Var("x"), Var("y")))))
     toStringTest(
         "let x=a,y=b in x",
         Let(Var("x"), List((Var("x"), Var("a")), (Var("y"), Var("b")))))
   }
 
-  @Test def test103StrRule() : Unit = {
+  @Test def test103StrRule(): Unit = {
     assertEquals("f(x,y)=y;",
       FRule("f", List(Var("x"), Var("y")), Var("y")).toString)
     assertEquals("g(C(x),y)=y;",
@@ -36,7 +36,7 @@ class SLanguageTests {
       GRule("g", Pat("C", List()), List(), Ctr("C", List())).toString)
   }
 
-  @Test def test104StrProgram() : Unit = {
+  @Test def test104StrProgram(): Unit = {
     assertEquals(
 """f()=A();
 f1()=A1();""",
@@ -51,7 +51,7 @@ g2(C(x))=A();""",
       GRule("g2", Pat("C", List(Var("x"))), List(), Ctr("A",List())))).toString)
   }
 
-  @Test def test201Eq() : Unit = {
+  @Test def test201Eq(): Unit = {
     assertTrue(Var("x") ==  Var("x"))
     assertTrue(Var("x") !=  Var("y"))
     assertTrue(Ctr("A", List()) == Ctr("A", List()))
