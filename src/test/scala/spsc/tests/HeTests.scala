@@ -1,35 +1,34 @@
 package spsc.tests
 
-import org.junit.Test
-import org.junit.Assert._
+import org.scalatest.FunSuite
 import spsc.HE._
 import spsc._
 
-class HeTests {
+class HeTests extends FunSuite {
 
-  def heTrue(input1: String, input2: String): Unit = {
-    val e1 = SParsers.parseTerm(input1)
-    val e2 = SParsers.parseTerm(input2)
-    assertTrue(he(e1, e2))
+  def heTrue(t1: String, t2: String): Unit = {
+    val e1 = SParsers.parseTerm(t1)
+    val e2 = SParsers.parseTerm(t2)
+    assert(he(e1, e2))
   }
 
-  def heFalse(input1: String, input2: String): Unit = {
-    val e1 = SParsers.parseTerm(input1)
-    val e2 = SParsers.parseTerm(input2)
-    assertFalse(he(e1, e2))
+  def heFalse(t1: String, t2: String): Unit = {
+    val e1 = SParsers.parseTerm(t1)
+    val e2 = SParsers.parseTerm(t2)
+    assert(!he(e1, e2))
   }
 
-  def varAttackTrue(input: String): Unit = {
-    val e = SParsers.parseTerm(input)
-    assertTrue(aVarIsUnderAttack(e))
+  def varAttackTrue(t: String): Unit = {
+    val e = SParsers.parseTerm(t)
+    assert(aVarIsUnderAttack(e))
   }
 
-  def varAttackFalse(input: String): Unit = {
-    val e = SParsers.parseTerm(input)
-    assertFalse(aVarIsUnderAttack(e))
+  def varAttackFalse(s: String): Unit = {
+    val e = SParsers.parseTerm(s)
+    assert(!aVarIsUnderAttack(e))
   }
 
-  @Test def test101VarAttack(): Unit = {
+  test(testName = "101 aVarIsUnderAttack") {
     varAttackTrue("x")
     varAttackFalse("A()")
     varAttackFalse("f(x)")
@@ -39,28 +38,28 @@ class HeTests {
     varAttackFalse("g(f(x))")
   }
 
-  @Test def test201VV(): Unit = {
-    heTrue("v1", "v2")
+  test(testName = "201 he") {
+    heTrue(t1 = "v1", t2 = "v2")
   }
 
-  @Test def test202VF(): Unit = {
-    heTrue("v1", "F(v2)")
+  test(testName = "202 he") {
+    heTrue(t1 = "v1", t2 = "F(v2)")
   }
 
-  @Test def test203FV(): Unit = {
-    heFalse("F(v2)", "v1")
+  test(testName = "203 he") {
+    heFalse(t1 = "F(v2)", t2 = "v1")
   }
 
-  @Test def test204Diving(): Unit = {
-    heTrue("F(v1)", "G(v0,F(H(v2)))")
+  test(testName = "204 he diving") {
+    heTrue(t1 = "F(v1)", t2 = "G(v0,F(H(v2)))")
   }
 
-  @Test def test205Coupling1(): Unit = {
-    heTrue("F(v1,G(v2))", "F(H(w1),G(w2))")
+  test(testName = "205 he coupling1") {
+    heTrue(t1 = "F(v1,G(v2))", t2 = "F(H(w1),G(w2))")
   }
 
-  @Test def test206Coupling2(): Unit = {
-    heFalse("f(v1)", "g(w1)")
+  test(testName = "206 he coupling") {
+    heFalse(t1 = "f(v1)", t2 = "g(w1)")
   }
 
 }

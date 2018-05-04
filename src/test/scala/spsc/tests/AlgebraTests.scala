@@ -1,104 +1,105 @@
 package spsc.tests
 
-import org.junit.Test
-import org.junit.Assert._
+import org.scalatest.FunSuite
 import spsc.Algebra._
 import spsc._
 
-class AlgebraTests {
+class AlgebraTests extends FunSuite {
 
-  @Test def test101TheSameFunctor(): Unit = {
-    assertTrue(shellEq(Ctr("A", List()), Ctr("A", List())))
-    assertTrue(shellEq(FCall("A", List()), FCall("A", List())))
-    assertTrue(shellEq(GCall("A", List()), GCall("A", List())))
-    assertFalse(shellEq(Ctr("A", List()), Ctr("B", List())))
-    assertFalse(shellEq(Ctr("A", List()), FCall("A", List())))
-    assertFalse(shellEq(Ctr("A", List()), Ctr("A", List(Var("y")))))
+  test(testName = "101 shellEq") {
+    assert(shellEq(Ctr("A", List()), Ctr("A", List())))
+    assert(shellEq(FCall("A", List()), FCall("A", List())))
+    assert(shellEq(GCall("A", List()), GCall("A", List())))
+    assert(!shellEq(Ctr("A", List()), Ctr("B", List())))
+    assert(!shellEq(Ctr("A", List()), FCall("A", List())))
+    assert(!shellEq(Ctr("A", List()), Ctr("A", List(Var("y")))))
   }
-  
-  @Test def test201Subst(): Unit = {
+
+  test(testName = "201 applySubst") {
     val e1 = SParsers.parseTerm("E1()")
     val e2 = SParsers.parseTerm("E2()")
     val e = SParsers.parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
-    val subst = Map(Var("x1")->e1, Var("x2")->e2)
-    assertEquals("Cons(E1(),Cons(E2(),Cons(x3,Nil())))",
-                 applySubst(subst, e).toString)
+    val subst = Map(Var("x1") -> e1, Var("x2") -> e2)
+    assert(applySubst(subst, e).toString
+      == "Cons(E1(),Cons(E2(),Cons(x3,Nil())))")
   }
 
-  @Test def test302Vars(): Unit = {
+  test(testName = "302 vars") {
     val e = SParsers.parseTerm("A(x,B(y,z),a)")
-    assertEquals(List(Var("x"), Var("y"), Var("z"), Var("a")), vars(e))
-    
+    assert(vars(e)
+      == List(Var("x"), Var("y"), Var("z"), Var("a")))
+
     val e1 = SParsers.parseTerm("A(x,B(y,x),a)")
-    assertEquals(List(Var("x"), Var("y"), Var("a")), vars(e1))
+    assert(vars(e1)
+      == List(Var("x"), Var("y"), Var("a")))
   }
 
   def substToString(subst: Map[Var, Term]): String = {
-    if( subst == null)
+    if (subst == null)
       null
     else {
       var acc = ""
-      for((v, e) <- subst)
+      for ((v, e) <- subst)
         acc += v.toString() + "->" + e.toString + ";"
-        acc.mkString("")
+      acc.mkString("")
     }
   }
-  
+
   def matchOK(pat: String, exp: String, expected: String): Unit = {
     val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(exp))
-    assertEquals(expected, substToString(subst))
+    assert(substToString(subst) == expected)
   }
 
   def matchNo(pat: String, exp: String): Unit = {
     val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(exp))
-    assertEquals(null, substToString(subst))
+    assert(substToString(subst) == null)
   }
 
-  @Test def test401MatchV_E(): Unit = {
+  test(testName = "401 matchAgainst") {
     matchOK(pat = "x", exp = "S(Z())", expected = "x->S(Z());")
   }
 
-  @Test def test402MatchC_V(): Unit = {
-    matchNo("Z()", "x")
+  test(testName = "402 matchAgainst") {
+    matchNo(pat = "Z()", exp = "x")
   }
 
-  @Test def test403MatchC_C(): Unit = {
-    matchOK("C(x,y)", "C(A(),B())", "x->A();y->B();")
+  test(testName = "403 matchAgainst") {
+    matchOK(pat = "C(x,y)", exp = "C(A(),B())", expected = "x->A();y->B();")
   }
 
-  @Test def test404MatchC1_C2(): Unit = {
-    matchNo("C(x,y)", "D(A(),B())")
+  test(testName = "404 matchAgainst") {
+    matchNo(pat = "C(x,y)", exp = "D(A(),B())")
   }
 
-  @Test def test405MatchC_F(): Unit = {
-    matchNo("C(x,y)", "f(A(),B())")
+  test(testName = "405 matchAgainst") {
+    matchNo(pat = "C(x,y)", exp = "f(A(),B())")
   }
 
-  @Test def test406MatchX_X_Eq(): Unit = {
-    matchOK("C(x,x)", "C(A(),A())", "x->A();")
+  test(testName = "406 matchAgainst") {
+    matchOK(pat = "C(x,x)", exp = "C(A(),A())", expected = "x->A();")
   }
 
-  @Test def test407Match_X_XY(): Unit = {
-    matchNo("C(x,y)", "C(A(),B(),C())")
+  test(testName = "407 matchAgainst") {
+    matchNo(pat = "C(x,y)", exp = "C(A(),B(),C())")
   }
 
-  @Test def testMatch_XY_X(): Unit = {
-    matchNo("C(x,y,z)", "C(A(),B())")
+  test(testName = "408 matchAgainst") {
+    matchNo(pat = "C(x,y,z)", exp = "C(A(),B())")
   }
 
   def equivYes(e1: String, e2: String): Unit = {
-    assertTrue(equiv(SParsers.parseTerm(e1), SParsers.parseTerm(e2)))
-  }
-
-  @Test def test501EquivYes(): Unit = {
-    equivYes("gA(fB(x,y),C())", "gA(fB(a,b),C())")
+    assert(equiv(SParsers.parseTerm(e1), SParsers.parseTerm(e2)))
   }
 
   def equivNo(e1: String, e2: String): Unit = {
-    assertFalse(equiv(SParsers.parseTerm(e1), SParsers.parseTerm(e2)))
+    assert(!equiv(SParsers.parseTerm(e1), SParsers.parseTerm(e2)))
   }
 
-  @Test def test502EquivNo(): Unit = {
-    equivNo("gA(fB(x,y),x)", "gA(fB(a,a),b)")
+  test(testName = "501 equiv") {
+    equivYes(e1 = "gA(fB(x,y),C())", e2 = "gA(fB(a,b),C())")
+  }
+
+  test(testName = "502 equiv") {
+    equivNo(e1 = "gA(fB(x,y),x)", e2 = "gA(fB(a,a),b)")
   }
 }

@@ -1,16 +1,15 @@
 package spsc.tests
 
-import org.junit.Test
-import org.junit.Assert._
+import org.scalatest.FunSuite
 
 import spsc.Algebra._
 import spsc._
 
-class BasicSupercompilerTests {
+class BasicSupercompilerTests extends FunSuite {
 
   val pAdd = "gAdd(S(x),y)=S(gAdd(x,y));gAdd(Z(),y)=y;"
   val pAddAcc = "gAddAcc(S(x),y)=gAddAcc(x,S(y));gAddAcc(Z(),y)=y;"
-  
+
   def drStep(prog: String, e: String, expected: String): Unit =
     drStep0(SParsers.parseProg(prog), SParsers.parseTerm(e), expected)
 
@@ -18,31 +17,40 @@ class BasicSupercompilerTests {
     resetVarGen()
     val scp = new BasicSupercompiler(prog)
     val branches = scp.driveExp(e)
-    val branches_s = (branches map {case (exp, contr) =>
+    val branches_s = (branches map { case (exp, contr) =>
       "(" + exp.toString + "," +
-        (if( contr == null ) "" else contr.toString) +
-        ")";}).mkString("")
-    assertEquals(expected, branches_s)
+        (if (contr == null) "" else contr.toString) + ")"
+    }).mkString("")
+    assert(branches_s == expected)
   }
 
-  @Test def test101Ctr(): Unit =
-    drStep("", "C(a,b)", "(a,)(b,)")
+  test(testName = "101 Ctr") {
+    drStep(prog = "", e = "C(a,b)", expected = "(a,)(b,)")
+  }
 
-  @Test def test102FCall(): Unit =
-    drStep("f(x)=x;", "f(A(z))", "(A(z),)")
+  test(testName = "102 FCall") {
+    drStep(prog = "f(x)=x;", e = "f(A(z))", expected = "(A(z),)")
+  }
 
-  @Test def test103GCallCtr(): Unit =
-    drStep(pAddAcc, "gAddAcc(S(S(Z())),Z())", "(gAddAcc(S(Z()),S(Z())),)")
+  test(testName = "103 GCallCtr") {
+    drStep(prog = pAddAcc, e = "gAddAcc(S(S(Z())),Z())",
+      expected = "(gAddAcc(S(Z()),S(Z())),)")
+  }
 
-  @Test def test104GCallVar(): Unit =
-    drStep(pAddAcc, "gAddAcc(a,b)", "(b,a=Z())(gAddAcc(v1,S(b)),a=S(v1))")
+  test(testName = "104 GCallVar") {
+    drStep(prog = pAddAcc, e = "gAddAcc(a,b)",
+      expected = "(b,a=Z())(gAddAcc(v1,S(b)),a=S(v1))")
+  }
 
-  @Test def test105GCallGeneral(): Unit =
-    drStep(pAddAcc, "gAddAcc(gAddAcc(a,b),c)",
-    "(gAddAcc(b,c),a=Z())(gAddAcc(gAddAcc(v1,S(b)),c),a=S(v1))")
+  test(testName = "105 GCallGeneral") {
+    drStep(prog = pAddAcc, e = "gAddAcc(gAddAcc(a,b),c)",
+      expected = "(gAddAcc(b,c),a=Z())(gAddAcc(gAddAcc(v1,S(b)),c),a=S(v1))")
+  }
 
-  @Test def test106Let(): Unit =
-    drStep0(Program(List()),
-    Let(Ctr("C", List(Var("x"), Var("y"))), List((Var("x"), Var("a")), (Var("y"), Var("b")))),
-    "(C(x,y),)(a,)(b,)")
+  test(testName = "106 Let") {
+    drStep0(prog = Program(List()),
+      e = Let(Ctr("C", List(Var("x"), Var("y"))),
+        List((Var("x"), Var("a")), (Var("y"), Var("b")))),
+      expected = "(C(x,y),)(a,)(b,)")
+  }
 }

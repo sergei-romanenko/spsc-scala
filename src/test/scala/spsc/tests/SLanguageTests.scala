@@ -1,67 +1,69 @@
 package spsc.tests
 
-import org.junit.Test
-import org.junit.Assert._
+import org.scalatest.FunSuite
 import spsc._
 
-class SLanguageTests {
 
-  def toStringTest(expected: String, e: Term): Unit = {
-    assertEquals(expected, e.toString)
+class SLanguageTests extends FunSuite {
+
+  def assertToStr(e: Term, s: String): Unit = {
+    assert(e.toString === s)
   }
 
-  @Test def test101StrVarAndCall(): Unit = {
-    toStringTest("x", Var("x"))
-    toStringTest("A(x,y)", Ctr("A", List(Var("x"), Var("y"))))
-    toStringTest("C()", Ctr("C", List()))
-    toStringTest("fX(x,y)", FCall("fX", List(Var("x"), Var("y"))))
-    toStringTest("gX(x,y)", GCall("gX", List(Var("x"), Var("y"))))
+  test(testName = "Term.toString 101 StrVarAndCall") {
+    assertToStr(Var("x"), "x")
+    assertToStr(Ctr("A", List(Var("x"), Var("y"))), "A(x,y)")
+    assertToStr(Ctr("C", List()), "C()")
+    assertToStr(FCall("fX", List(Var("x"), Var("y"))), "fX(x,y)")
+    assertToStr(GCall("gX", List(Var("x"), Var("y"))), "gX(x,y)")
   }
 
-  @Test def test102StrLet(): Unit = {
-    toStringTest("let x=y in y", Let(Var("y"), List((Var("x"), Var("y")))))
-    toStringTest(
-        "let x=a,y=b in x",
-        Let(Var("x"), List((Var("x"), Var("a")), (Var("y"), Var("b")))))
+  test(testName = "Term.toString 102 StrLet") {
+    assertToStr(Let(Var("y"), List((Var("x"), Var("y")))),
+      "let x=y in y")
+    assertToStr(Let(Var("x"), List((Var("x"), Var("a")), (Var("y"), Var("b")))),
+      "let x=a,y=b in x")
   }
 
-  @Test def test103StrRule(): Unit = {
-    assertEquals("f(x,y)=y;",
-      FRule("f", List(Var("x"), Var("y")), Var("y")).toString)
-    assertEquals("g(C(x),y)=y;",
-      GRule("g", Pat("C", List(Var("x"))), List(Var("y")), Var("y")).toString)
-    assertEquals("g(C(),y)=y;",
-      GRule("g", Pat("C", List()), List(Var("y")), Var("y")).toString)
-    assertEquals("g(C())=C();",
-      GRule("g", Pat("C", List()), List(), Ctr("C", List())).toString)
+  test(testName = "Rule.toString 103 StrRule") {
+    assert(FRule("f", List(Var("x"), Var("y")), Var("y")).toString
+      === "f(x,y)=y;")
+    assert(GRule("g", Pat("C", List(Var("x"))), List(Var("y")), Var("y")).toString
+      === "g(C(x),y)=y;")
+    assert(GRule("g", Pat("C", List()), List(Var("y")), Var("y")).toString
+      === "g(C(),y)=y;")
+    assert(GRule("g", Pat("C", List()), List(), Ctr("C", List())).toString
+      === "g(C())=C();")
   }
 
-  @Test def test104StrProgram(): Unit = {
-    assertEquals(
-"""f()=A();
-f1()=A1();""",
-    Program(List(FRule("f", List(), Ctr("A",List())),
-      FRule("f1", List(), Ctr("A1", List())))).toString)
-    assertEquals(
-"""g(C())=A();
+  test(testName = "Program.toString 104 StrProgram") {
+    assert(Program(List(
+      FRule("f", List(), Ctr("A", List())),
+      FRule("f1", List(), Ctr("A1", List())))).toString
+      ===
+      """f()=A();
+f1()=A1();""")
+    assert(Program(List(
+      GRule("g", Pat("C", List()), List(), Ctr("A", List())),
+      GRule("g1", Pat("C", List()), List(Var("x")), Ctr("A", List())),
+      GRule("g2", Pat("C", List(Var("x"))), List(), Ctr("A", List())))).toString
+      ===
+      """g(C())=A();
 g1(C(),x)=A();
-g2(C(x))=A();""",
-    Program(List(GRule("g", Pat("C", List()), List(), Ctr("A",List())),
-      GRule("g1", Pat("C", List()), List(Var("x")), Ctr("A",List())),
-      GRule("g2", Pat("C", List(Var("x"))), List(), Ctr("A",List())))).toString)
+g2(C(x))=A();""")
   }
 
-  @Test def test201Eq(): Unit = {
-    assertTrue(Var("x") ==  Var("x"))
-    assertTrue(Var("x") !=  Var("y"))
-    assertTrue(Ctr("A", List()) == Ctr("A", List()))
-    assertTrue(Ctr("A", List()) != Ctr("B", List()))
-    assertTrue(List() ==  List())
-    assertTrue(List(Var("x")) ==  List(Var("x")))
-    assertTrue(List(Var("x")) != List(Var("y")))
-    assertTrue(List(Var("x")) != List(Var("x"), Var("z")))
-    assertTrue(Ctr("A", List(Var("x"))) == Ctr("A", List(Var("x"))))
-    assertTrue(Ctr("A", List(Var("x"))) != Ctr("A", List(Var("y"))))
+  test(testName = "Term.equals 201 Eq") {
+    assert(Var("x") ==  Var("x"))
+    assert(Var("x") !=  Var("y"))
+    assert(Ctr("A", List()) == Ctr("A", List()))
+    assert(Ctr("A", List()) != Ctr("B", List()))
+    assert(List() ==  List())
+    assert(List(Var("x")) ==  List(Var("x")))
+    assert(List(Var("x")) != List(Var("y")))
+    assert(List(Var("x")) != List(Var("x"), Var("z")))
+    assert(Ctr("A", List(Var("x"))) == Ctr("A", List(Var("x"))))
+    assert(Ctr("A", List(Var("x"))) != Ctr("A", List(Var("y"))))
   }
- 
+
 }
