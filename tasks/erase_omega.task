@@ -1,0 +1,7 @@
+-- "Lazy" evaluation during compilation.
+
+erase(omega(u))
+where
+
+omega(x) = omega(x);
+erase(x) = Stop;

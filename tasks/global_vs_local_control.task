@@ -1,0 +1,13 @@
+--
+-- An example by Sands
+-- Local and global control
+--
+-- Here g(False) is an instance of g(x). Nevertheless g(False) is not generalized
+-- to g(x), because g(x) is a "global" node while g(True) is a "local" one.
+--
+
+g(x)
+where
+
+g(True) = True;
+g(False) = g(False);

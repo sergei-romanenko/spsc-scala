@@ -1,0 +1,15 @@
+-- Generalizing 2 configurations to a third configuration.
+
+-- In this case add(a, a) is transformed to add(a1, S(a1)). add(a1, S(a1))
+-- IS NOT an instance of add(a, a), but add(a1, S(a1)) is homeomorphically
+-- embedded in add(a, a).
+
+-- So, SPSC finds that both add(a, a) and add(a1, S(a1)) ARE instances of
+-- add(v1, v2), throws away the subtree under add(a, a) and generalizes
+-- add(a, a) to add(v1, v2).
+
+add(a, a)
+where
+
+add(Z, y) = y;
+add(S(x), y)=S(add(x, y));

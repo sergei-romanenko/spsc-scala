@@ -1,0 +1,16 @@
+-- Addition using an accumulator.
+
+-- The task addAcc(a, Z) is evidently a special case of the task addAcc(a, b).
+-- At the first glance, this special task should be simpler than the more
+-- general one. But, in reality, addAcc(a, Z) is harder for the supercompiler,
+-- because it starts by generalizing the configuration addAcc(a, Z)
+-- to addAcc(a, b)! Hence, It has to perform 2 generalizations instead of one.
+
+-- This is typical of proofs by induction: a proof is often started
+-- by generalizing the statement under consideration.
+
+addAcc(a, Z)
+where
+
+addAcc(Z, y) = y;
+addAcc(S(x), y) = addAcc(x, S(y));

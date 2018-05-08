@@ -1,0 +1,18 @@
+-- Multiplication.
+
+-- Here driving produces and infinite sequence of configurations:
+-- mult(a, b)--> add(mult(a1, b), b) --> add(add(mult(a2, b), b), b) -->
+-- add(add(add(mult(a3, b), b), b), b).
+
+-- No configuration is an instance of a previous one! But each configuration is
+-- homeomorphically embedded in the following one.
+-- So, the whistle stops the development of the process tree. 
+
+mult(a, b)
+where
+
+add(Z, y) = y;
+add(S(x), y) = S(add(x, y));
+
+mult(Z, y) = Z;
+mult(S(x), y) = add(mult(x, y), y);

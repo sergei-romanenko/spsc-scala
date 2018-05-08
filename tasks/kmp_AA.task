@@ -1,0 +1,29 @@
+-- This example is due to Ilya Klyuchnikov.
+
+-- A Knuth-Morris-Pratt Example:
+-- finding A A in a string.
+
+match(Cons(A, Cons(A, Nil)), str)
+where
+
+eqSymb(A, y) = eqA(y);
+eqSymb(B, y) = eqB(y);
+eqSymb(C, y) = eqC(y);
+
+eqA(A) = True;  eqA(B) = False; eqA(C) = False;
+eqB(A) = False; eqB(B) = True;  eqB(C) = False;
+eqC(A) = False; eqC(B) = False; eqC(C) = True;
+
+if(True, x, y) = x;
+if(False, x, y) = y;
+
+match(p, s) = m(p, s, p, s);
+
+m(Nil, ss, op, os) = True;
+m(Cons(p, pp), ss, op, os) = mx(ss, p, pp, op, os);
+
+mx(Nil, p, pp,  op, os) = False;
+mx(Cons(s, ss), p, pp,  op, os) = if(eqSymb(p, s), m(pp, ss, op, os), mn(os, op));
+
+mn(Nil, op) = False;
+mn(Cons(s, ss), op) = m(op, ss, op, ss);

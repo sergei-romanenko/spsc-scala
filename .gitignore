@@ -8,3 +8,5 @@ bin/
 .classpath
 .project
 /src/main/scala/spsc/*.sc
+/tasks/*.tree
+/tasks/*.res

@@ -1,0 +1,7 @@
+-- Transforming a 2-pass algorithm to a 1-pass one for binary functions.
+
+append (append(append(xs, ys), zs), as)
+where
+
+append(Nil, vs) = vs;
+append(Cons(u, us), vs) = Cons(u, append(us, vs));

@@ -1,0 +1,12 @@
+-- Function composition.
+
+-- This sample shows that SPSC is able to transform a 2-pass algorithm to
+-- a 1-pass one.
+-- SPSC notes that b(a(A(x))) --> b(B(a(x))) --> C(b(a(x)) and creates
+-- a recursively defined function b1 such that calling b1(...) produces
+-- the same result as calling b(a(...)).
+
+b(a(u))
+where
+a(A(x)) = B(a(x));
+b(B(x)) = C(b(x));

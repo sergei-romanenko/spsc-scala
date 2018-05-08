@@ -1,0 +1,36 @@
+-- This example is due to Ilya Klyuchnikov.
+
+-- member(a, as) returns True, if a appears in the list as,
+-- and False otherwise.
+
+-- Upon supercompiling the source program, we get a version of member that is
+-- "simpler" than the original one. The target program is "more imperative"
+-- in comparison with the "more functional" source program, because
+-- its structure resembles that of a "finite-state machine".
+
+ -- member(a, Cons(Z, Cons(S(Z), Nil)))  returns True, if a appears in the list
+ -- consisting of Z and S(Z), and False otherwise.
+ -- Upon supercompiling the source program, we get a version of member
+ -- "specialized" with respect to the value of its second argument. Besides,
+ -- the target program has the structure that is "simpler" than that of
+ -- the source program. The source program containes recursive function
+ -- definitions, while there is no recursion in the target program.
+ -- (Or, in more "imperative" terms, there is no "loops".)
+
+member(a, Cons(Z, Cons(S(Z), Nil)))
+where
+
+eq(Z, y) = eqZ(y);
+eq(S(x), y) = eqS(y, x);
+eqZ(Z) = True;
+eqZ(S(x)) = False;
+eqS(Z, x) = False;
+eqS(S(y), x) = eq(x, y);
+
+memberSel(Nil, x) = False;
+memberSel(Cons(y, ys), x) = memberEq(eq(x, y), x, ys);
+
+memberEq(True, x, ys) = True;
+memberEq(False, x, ys) = memberSel(ys, x);
+
+member(x, ys) = memberSel(ys, x);

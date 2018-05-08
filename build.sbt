@@ -1,6 +1,6 @@
 scalaVersion := "2.12.6"
 
-name := "spsc-lite"
+name := "spsc-scala"
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
 

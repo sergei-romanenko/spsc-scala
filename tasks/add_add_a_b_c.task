@@ -1,0 +1,7 @@
+-- Transforming a 2-pass algorithm to a 1-pass one for binary functions.
+
+add(add(a, b), c)
+where
+
+add(Z, y) = y;
+add(S(x), y) = S(add(x, y));

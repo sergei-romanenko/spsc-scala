@@ -1,0 +1,9 @@
+-- Generalization of the upper configuration.
+
+-- f(a) is embedded into f(S(a)), and f(a) and f(S(a)) have a common part.
+-- Thus, f(S(a)) is generalized to f(v).
+
+f(a)
+where
+
+f(x) = f(S(x));

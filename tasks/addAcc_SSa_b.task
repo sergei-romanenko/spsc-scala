@@ -1,0 +1,12 @@
+-- This example shows a good side of the whistle, based on homeomorphic
+-- embedding. In the sequence
+--     addAcc(S(S(a)), b) --> addAcc(S(a), S(b)) --> addAdd(a, S(S(b)))
+-- all configurations are considered as "non-related", because there is
+-- no imbedding. Thus the supercompiler is able to perform 2 reductions steps
+-- removing 2 S-constructors.
+
+addAcc(S(S(a)), b)
+where
+
+addAcc(Z, y) = y;
+addAcc(S(x), y) = addAcc(x, S(y));

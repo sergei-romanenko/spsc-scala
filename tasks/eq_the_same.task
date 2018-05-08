@@ -1,0 +1,19 @@
+-- SPSC "proves the theorem" that "a=a cannot be false".
+
+-- In the residual program, False is never returned by the start function,
+-- produced by SPSC. Hence, SPSC is able to "prove the theorem"
+-- that "a=a cannot be false".
+-- An illustration to the idea that a supercompiler can be used for
+-- "theorem proving".
+
+eq(a,a)
+where
+
+eq(Z, y) = eqZ(y);
+eq(S(x), y) = eqS(y, x);
+
+eqZ(Z) = True;
+eqZ(S(x)) = False;
+
+eqS(Z, x) = False;
+eqS(S(y), x) = eq(x, y);

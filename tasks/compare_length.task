@@ -1,0 +1,23 @@
+-- This example is due to Ilya Klyuchnikov.
+
+-- Eliminating intermediate data structures.
+-- During comparison of lengths of two lists natural numbers
+-- (corresponding to lengths) are created. Then these numbers are compared.
+-- SPSC eliminates the construction of these intermediate data structures.
+
+compare(length(xs), length(ys))
+where
+
+-- The length of a list.
+
+length(Nil)=Z;
+length(Cons(x, xs))=S(length(xs));
+
+-- Comparing natural numbers.
+
+compare(Z, y)=comp1(y);
+compare(S(x), y)=comp2(y, x);
+comp1(Z)=Equal;
+comp1(S(y))=Less;
+comp2(Z, x)=Greater;
+comp2(S(y), x)=compare(x,y);

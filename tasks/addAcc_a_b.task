@@ -1,0 +1,17 @@
+-- Addition using an accumulator.
+
+-- Driving addAcc(a, b) produces an infinite sequence of configurations:
+-- addAcc(a, b), addAcc(a1, S(b)), addAcc(a2, S(S(b))), ...
+-- In order to produce a finite process tree, the supercompiler has to
+-- _generalize_ configurations. In this case, addAcc(a1, S(b)) is generalized
+-- by lifting S(b) out of the expression and replacing S(b) with a variable.
+-- Technically, this is done by means of a let-expression:
+-- let v1 = a1, v2 = S(b) in addAcc(v1, v2).
+-- Now addAcc(v1, v2) is the same as addAcc(a, b) modulo variable names,
+-- and the supercompiler can create a loop in the graph of configurations.
+
+addAcc(a, b)
+where
+
+addAcc(Z, y) = y;
+addAcc(S(x), y) = addAcc(x, S(y));

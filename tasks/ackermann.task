@@ -1,0 +1,12 @@
+-- Ackermann's function.
+
+ackermann(x, y) 
+where
+
+a(Z, n) = S(n);
+a(S(m), n) = b(n, m);
+
+b(Z, m) = a(m, S(Z));
+b(S(n), m) = a(m, a(S(m), n));
+
+ackermann(x, y) = a(x, y);

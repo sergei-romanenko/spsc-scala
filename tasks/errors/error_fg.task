@@ -1,0 +1,3 @@
+-- An error: the same function has both an f-rule and a g-rule.
+
+f(x) where f(x) = x; f(A) = B;

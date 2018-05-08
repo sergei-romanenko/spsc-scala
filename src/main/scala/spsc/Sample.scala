@@ -118,7 +118,7 @@ object Sample {
     gElistTail(Ec(exp,elist))=elist;
     """  
   
-  def main(args: Array[String]): Unit = {
+  def main1(args: Array[String]): Unit = {
 
     runBaseSuperCompiler(target7, program7)
     runBaseSuperCompiler(target1, program1)

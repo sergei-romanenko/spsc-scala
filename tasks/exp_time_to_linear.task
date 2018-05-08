@@ -1,0 +1,11 @@
+-- This example is due to Andrei Klimov.
+-- Exponetial-time program converted to linear one...
+
+-- The subtle point is that the standard lazy evaluation
+-- doesn't see that g(x,x) can be evaluated only once.
+
+g(a,a)
+where
+
+g(Z,y) = y;
+g(S(x),y)=g(g(x,x),g(x,x));

@@ -1,0 +1,13 @@
+-- SPSC proves that even(double(n)) never returns False.
+
+even(double(n))
+where
+
+even(Z)    = True;
+even(S(x1)) = odd(x1);
+
+odd(Z)     = False;
+odd(S(x1)) = even(x1);
+
+double(Z) = Z;
+double(S(x)) = S(S(double(x)));

@@ -1,0 +1,10 @@
+-- Decomposition of the lower configuration.
+
+-- f(a) is embedded into g(f(x)), but f(a) and g(f(x)) don't have
+-- a common part. So, g(f(x)) is decomposed into let v = f(a) in g(v).
+
+f(a)
+where
+
+f(x) = g(f(x));
+g(A) = B;

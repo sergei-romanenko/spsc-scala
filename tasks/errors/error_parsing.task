@@ -1,0 +1,3 @@
+-- A parsing error.
+
+f(x) where f(x) = ;
