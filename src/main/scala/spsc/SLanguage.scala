@@ -63,3 +63,7 @@ case class Program(rules: List[Rule]){
 
   override def toString: String = rules.mkString("\n")
 }
+
+case class Task(term: Term, prog: Program) {
+  override def toString: String = term.toString + " where " + prog.toString
+}

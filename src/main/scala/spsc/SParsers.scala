@@ -7,14 +7,18 @@ import scala.util.parsing.input.{CharSequenceReader => Reader}
 
 object SParsers extends StandardTokenParsers with ImplicitConversions {
   lexical.delimiters += ("(", ")", ",", "=", ";")
+  lexical.reserved += "where"
 
-  def prog: SParsers.Parser[List[Rule]] =
-    definition*
+  def task: SParsers.Parser[Task] =
+    term ~ ("where" ~> prog) ^^ Task
 
-  def definition: Parser[Rule] =
+  def prog : SParsers.Parser[Program] =
+    (definition*) ^^ Program
+
+  def definition: SParsers.Parser[Rule] =
     gRule | fRule
 
-  def term: Parser[Term] =
+  def term: SParsers.Parser[Term] =
     fcall | gcall | ctr | vrb
 
   def uid: SParsers.Parser[String] =
@@ -50,9 +54,13 @@ object SParsers extends StandardTokenParsers with ImplicitConversions {
   def gcall: SParsers.Parser[CFG] =
     gid ~ ("(" ~> repsep(term, ",") <~ ")") ^^ GCall
 
-  def parseProg(s: String) =
-    Program(prog(new lexical.Scanner(new Reader(s))).get)
-
   def parseTerm(s: String): Term =
     term(new lexical.Scanner(new Reader(s))).get
+
+  def parseProg(s: String): Program =
+    prog(new lexical.Scanner(new Reader(s))).get
+
+  def parseTask(s: String): Task = {
+    task(new lexical.Scanner(new Reader(s))).get
+  }
 }

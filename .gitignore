@@ -7,3 +7,4 @@ bin/
 .cache
 .classpath
 .project
+/src/main/scala/spsc/*.sc

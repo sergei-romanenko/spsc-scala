@@ -23,7 +23,7 @@ class ProcessTreeTests extends FunSuite with BeforeAndAfter {
       == "{,0:(r,,,[1,4]),1:(m1,,0,[3]),3:(n,,1,[]),4:(x,,0,[])}")
   }
 
-  test(testName = " 02 Tree.leaves") {
+  test(testName = "02 Tree.leaves") {
     assert((tree.leaves map { n => n.nodeId })
       == List(3, 4))
   }
