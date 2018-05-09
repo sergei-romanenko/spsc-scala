@@ -19,8 +19,8 @@ case class CFG(kind: TKind.Value, name: String, args: List[Term])
 abstract class CFGObject(kind: TKind.Value)
     extends ((String, List[Term]) => CFG) {
   def apply(name: String, args: List[Term]) = CFG(kind, name, args)
-  def unapply(e: CFG): Option[(String, List[Term])] =
-    if (e.kind == kind) Some(e.name, e.args) else None
+  def unapply(t: CFG): Option[(String, List[Term])] =
+    if (t.kind == kind) Some(t.name, t.args) else None
 }
 
 object Ctr extends CFGObject(TKind.Ctr)

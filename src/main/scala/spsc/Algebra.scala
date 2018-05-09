@@ -9,7 +9,7 @@ object Algebra {
   
   def applySubst(m: Map[Var, Term], term: Term): Term = term match {
     case v: Var => m.getOrElse(v, v)
-    case e: CFG => e.replaceArgs(e.args.map(applySubst(m, _)))
+    case t: CFG => t.replaceArgs(t.args.map(applySubst(m, _)))
   }
   
   def equiv(t1: Term, t2: Term): Boolean = instOf(t1, t2) && instOf(t2, t1)
@@ -32,7 +32,7 @@ object Algebra {
   
   def vars: Term => List[Var] = {
     case v: Var => List(v)
-    case e: CFG => (List[Var]() /: e.args) {(vs, exp) =>  (vs ++ vars(exp)).distinct}
+    case t: CFG => (List[Var]() /: t.args) {(vs, exp) =>  (vs ++ vars(exp)).distinct}
   }
   
   private var i = 0

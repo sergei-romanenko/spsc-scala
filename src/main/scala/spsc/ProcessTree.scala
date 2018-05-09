@@ -8,20 +8,20 @@ case class Contraction(v: Var, pat: Pat) {
 }
 
 class Node(val nodeId: Int,
-           val expr: Term, val parent: Node,
+           val term: Term, val parent: Node,
            val contr: Contraction) {
   
   def ancestors: List[Node] = 
     if (parent == null) Nil else parent :: parent.ancestors
   
-  def isProcessed: Boolean = expr match {
+  def isProcessed: Boolean = term match {
     case Ctr(_, Nil) => true
     case v: Var => true
     case _ => funcAncestor != null
   }
   
   def funcAncestor: Node =
-    ancestors.find { n => isFGCall(n.expr) && equiv(expr, n.expr) }.orNull
+    ancestors.find { n => isFGCall(n.term) && equiv(term, n.term) }.orNull
 }
 
 class Tree(val freeId: Int,
@@ -35,12 +35,12 @@ class Tree(val freeId: Int,
                (n -> (cs map {case (t, b) => i += 1; new Node(i, t, n, b)})))
     }
 
-  def replace(n: Node, exp: Term): Tree =
+  def replace(n: Node, term: Term): Tree =
     if (n == root) new Tree(freeId, n, Map().withDefaultValue(Nil))
     else {
       val p = n.parent
       val cs = children(p) map {m =>
-        if (m == n) new Node(freeId, exp, p, n.contr) else m}
+        if (m == n) new Node(freeId, term, p, n.contr) else m}
       new Tree(freeId+1, root, children + (p -> cs))
     }
   
@@ -58,7 +58,7 @@ class Tree(val freeId: Int,
         (for (child <- children(n))
           yield child.nodeId.toString).mkString(",")
       val contr_s = if( n.contr == null ) "" else n.contr.toString
-      val node_s = n.nodeId.toString + ":(" + n.expr + "," + contr_s +
+      val node_s = n.nodeId.toString + ":(" + n.term + "," + contr_s +
         "," + parentId_s + ",[" + children_s + "])"
       if( acc.nonEmpty ) acc.append(",")
       acc.append(node_s)
@@ -73,8 +73,8 @@ class Tree(val freeId: Int,
 
 object Tree {
 
-  def create(e: Term) =
+  def create(term: Term) =
     new Tree(freeId = 1,
-      root = new Node(nodeId = 0, expr = e, parent = null, contr = null),
+      root = new Node(nodeId = 0, term = term, parent = null, contr = null),
                       children = Map().withDefaultValue(Nil))
 }

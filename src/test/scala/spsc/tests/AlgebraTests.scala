@@ -45,46 +45,46 @@ class AlgebraTests extends FunSuite {
     }
   }
 
-  def matchOK(pat: String, exp: String, expected: String): Unit = {
-    val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(exp))
+  def matchOK(pat: String, term: String, expected: String): Unit = {
+    val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(term))
     assert(substToString(subst) == expected)
   }
 
-  def matchNo(pat: String, exp: String): Unit = {
-    val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(exp))
+  def matchNo(pat: String, term: String): Unit = {
+    val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(term))
     assert(substToString(subst) == null)
   }
 
   test(testName = "401 matchAgainst") {
-    matchOK(pat = "x", exp = "S(Z())", expected = "x->S(Z());")
+    matchOK(pat = "x", term = "S(Z())", expected = "x->S(Z());")
   }
 
   test(testName = "402 matchAgainst") {
-    matchNo(pat = "Z()", exp = "x")
+    matchNo(pat = "Z()", term = "x")
   }
 
   test(testName = "403 matchAgainst") {
-    matchOK(pat = "C(x,y)", exp = "C(A(),B())", expected = "x->A();y->B();")
+    matchOK(pat = "C(x,y)", term = "C(A(),B())", expected = "x->A();y->B();")
   }
 
   test(testName = "404 matchAgainst") {
-    matchNo(pat = "C(x,y)", exp = "D(A(),B())")
+    matchNo(pat = "C(x,y)", term = "D(A(),B())")
   }
 
   test(testName = "405 matchAgainst") {
-    matchNo(pat = "C(x,y)", exp = "f(A(),B())")
+    matchNo(pat = "C(x,y)", term = "f(A(),B())")
   }
 
   test(testName = "406 matchAgainst") {
-    matchOK(pat = "C(x,x)", exp = "C(A(),A())", expected = "x->A();")
+    matchOK(pat = "C(x,x)", term = "C(A(),A())", expected = "x->A();")
   }
 
   test(testName = "407 matchAgainst") {
-    matchNo(pat = "C(x,y)", exp = "C(A(),B(),C())")
+    matchNo(pat = "C(x,y)", term = "C(A(),B(),C())")
   }
 
   test(testName = "408 matchAgainst") {
-    matchNo(pat = "C(x,y,z)", exp = "C(A(),B())")
+    matchNo(pat = "C(x,y,z)", term = "C(A(),B())")
   }
 
   def equivYes(e1: String, e2: String): Unit = {

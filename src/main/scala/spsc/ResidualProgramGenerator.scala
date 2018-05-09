@@ -11,7 +11,7 @@ class ResidualProgramGenerator(val tree: Tree) {
     (walk(tree.root), Program(defs.toList))
   
   private def walk(n: Node): Term =
-    if (n.funcAncestor == null) n.expr match {
+    if (n.funcAncestor == null) n.term match {
       case v: Var => v
       case Let(_,bs) =>
         var body = walk(tree.children(n).head)
@@ -23,14 +23,14 @@ class ResidualProgramGenerator(val tree: Tree) {
     } else sigs(n.funcAncestor) match {
       case (name, args) =>
         if (tree.children(n.funcAncestor).head.contr == null)
-             applySubst(matchAgainst(n.funcAncestor.expr, n.expr),
+             applySubst(matchAgainst(n.funcAncestor.term, n.term),
                         FCall(name, args))
-        else applySubst(matchAgainst(n.funcAncestor.expr, n.expr),
+        else applySubst(matchAgainst(n.funcAncestor.term, n.term),
                         GCall(name, args))
     }
 
   def walkCall(n: Node, name: String, args: List[Term]): Term = {
-    val vs = vars(n.expr)
+    val vs = vars(n.term)
     if (tree.children(n).head.contr != null) {
       val (gname, _) = sigs.getOrElseUpdate(n, (rename(name, "g"), vs))
       for (cn <- tree.children(n)) 

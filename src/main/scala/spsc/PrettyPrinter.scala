@@ -25,7 +25,7 @@ object PrettyPrinter {
   def docNode(tree: Tree, node: Node): Doc = {
     docContr(node.contr) +
       (if (node.nodeId == 0) Doc.empty else Doc.line) +
-      Doc.str(node.nodeId) + Doc.text(str = " : ") + Doc.str(node.expr) +
+      Doc.str(node.nodeId) + Doc.text(str = " : ") + Doc.str(node.term) +
       docBack(tree, node) +
       docChildren(tree, node).nested(amount = 4)
   }

@@ -6,8 +6,8 @@ import spsc._
 
 class SLanguageTests extends FunSuite {
 
-  def assertToStr(e: Term, s: String): Unit = {
-    assert(e.toString === s)
+  def assertToStr(t: Term, s: String): Unit = {
+    assert(t.toString === s)
   }
 
   test(testName = "Term.toString 101 StrVarAndCall") {

@@ -13,10 +13,10 @@ class BasicSupercompilerTests extends FunSuite {
   def drStep(prog: String, e: String, expected: String): Unit =
     drStep0(SParsers.parseProg(prog), SParsers.parseTerm(e), expected)
 
-  def drStep0(prog: Program, e: Term, expected: String): Unit = {
+  def drStep0(prog: Program, term: Term, expected: String): Unit = {
     resetVarGen()
     val scp = new BasicSupercompiler(prog)
-    val branches = scp.driveExp(e)
+    val branches = scp.driveTerm(term)
     val branches_s = (branches map { case (exp, contr) =>
       "(" + exp.toString + "," +
         (if (contr == null) "" else contr.toString) + ")"
@@ -49,7 +49,7 @@ class BasicSupercompilerTests extends FunSuite {
 
   test(testName = "106 Let") {
     drStep0(prog = Program(List()),
-      e = Let(Ctr("C", List(Var("x"), Var("y"))),
+      term = Let(Ctr("C", List(Var("x"), Var("y"))),
         List((Var("x"), Var("a")), (Var("y"), Var("b")))),
       expected = "(C(x,y),)(a,)(b,)")
   }
