@@ -5,69 +5,58 @@ import org.typelevel.paiges.Doc._
 
 object PrettyPrinter {
 
+  // Pretty printing tasks.
+
   def docProgram(prog: Program): Doc =
-    //stack(prog.rules.map { r => Doc.str(r) })
-    stack(prog.rules.map {Doc.str})
+    stack(prog.rules.map(Doc.str))
 
   def docTask(task: Task): Doc =
-    Doc.str(task.term) / Doc.text(str = "where") / empty /
-      docProgram(task.prog) / empty
+    Doc.str(task.term) / Doc.text(str = "where") + Doc.line + Doc.line +
+      docProgram(task.prog) + Doc.line
 
   def ppTask(task: Task): String =
     docTask(task).render(width = 80)
+
+  // Pretty printing trees.
+
+  def docTree(tree: Tree): Doc =
+    docNode(tree, tree.root) + Doc.line
+
+  def docNode(tree: Tree, node: Node): Doc = {
+    docContr(node.contr) +
+      (if (node.nodeId == 0) Doc.empty else Doc.line) +
+      Doc.str(node.nodeId) + Doc.text(str = " : ") + Doc.str(node.expr) +
+      docBack(tree, node) +
+      docChildren(tree, node).nested(amount = 4)
+  }
+
+  def docBack(tree: Tree, node: Node): Doc = {
+    val fn = node.funcAncestor
+    if (fn == null) Doc.empty else {
+      Doc.line + Doc.text(str = "--> ") + Doc.str(fn.nodeId)
+    }
+  }
+
+  def docContr(contr: Contraction): Doc =
+    if (contr == null)
+      Doc.empty
+    else {
+      Doc.line + Doc.text(str = "{") +
+        Doc.str(contr.v) + Doc.text(str = " = ") + Doc.str(contr.pat) +
+        Doc.text(str = "}")
+    }
+
+  def docChildren(tree: Tree, node: Node): Doc = {
+    val ns = tree.children(node)
+    if (ns.isEmpty)
+      Doc.empty
+    else {
+      Doc.line +
+        Doc.intercalate(Doc.line, for (n <- ns) yield docNode(tree, n))
+    }
+  }
+
+  def ppTree(tree: Tree): String =
+    docTree(tree).render(width = 80)
+
 }
-
-/*
-module PrettyPrinter
-
-import Text.PrettyPrint.WL
-
-import SLanguage
-import ProcessTree
-
-%default covering
-
-docProgram : Program -> Doc
-docProgram (MkProgram fRules gRules) =
-  vsep $ (map (text . show) fRules ++ map (text . show) gRules)
-
-docTask : Task -> Doc
-docTask (MkTask exp prog) =
-  (text . show) exp |$| text "where" |+| line |$| docProgram prog |+| line
-
-export
-ppTask : Task -> String
-ppTask task =
-  toString 0.4 80 $ docTask task
-
-mutual
-
-  docTree : Tree -> NodeId -> Doc
-  docTree tree nId =
-    docTree' tree nId |+| line
-
-  docTree' : Tree -> NodeId -> Doc
-  docTree' tree nId =
-    let MkNode _ exp contr parent children back = getNode tree nId in
-    docContr contr |+|
-    text (cast nId) |+| text " : " |+| text (show exp) |+|
-    maybe empty (\backId => line |+| text ("--> " ++ cast backId)) back |+|
-    (nest 4 $ docChildren tree children)
-
-  docContr : Maybe Contraction -> Doc
-  docContr Nothing = empty
-  docContr (Just (MkContraction vname cname cparams)) =
-    char '{' |+|
-    text vname |+| text " = " |+| text (showPat cname cparams) |+|
-    char '}' |+| line
-  
-  docChildren : Tree -> List NodeId -> Doc
-  docChildren tree [] = empty
-  docChildren tree (nId :: nIds) =
-    line |+| line |+| docTree' tree nId |+| docChildren tree nIds
-
-export
-ppTree : Tree -> String
-ppTree tree =
-  toString 0.4 80 $ docTree tree 0
-*/

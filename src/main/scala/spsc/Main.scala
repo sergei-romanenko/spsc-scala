@@ -9,6 +9,15 @@ import spsc.PrettyPrinter._
 
 object Main extends App {
 
+  def wrStr(path: String, str: String): Unit = {
+    val pw = new PrintWriter(new File(path))
+    try {
+      pw.write(str)
+    } finally {
+      pw.close()
+    }
+  }
+
   try {
     breakable {
       if (args.length != 1) {
@@ -29,20 +38,12 @@ object Main extends App {
       //Just msg => putStrLn msg
       val scp = new AdvancedSupercompiler(task.prog)
       val tree = scp.buildProcessTree(task.term)
-      //Right _ <- writeFile pathTree (ppTree $ tree)
-      //Left ferr =>
-      //  putStrLn ("Error writing file " ++ pathTree ++ ": " ++ show ferr)
+      wrStr(pathTree, ppTree(tree))
       println("* Process tree written to " + pathTree)
       val rpg = new ResidualProgramGenerator(tree)
       val (resTerm, resProg) = rpg.result
       val resTask = Task(resTerm, resProg)
-      val strResTask = ppTask(resTask)
-      val pw = new PrintWriter(new File(pathRes))
-      try {
-        pw.write(strResTask)
-      } finally {
-        pw.close()
-      }
+      wrStr(pathRes, ppTask(resTask))
       println("* Output written to " + pathRes)
     }
   } catch {
