@@ -1,7 +1,7 @@
 package spsc
 import Algebra._
 
-class ResidualProgramGenerator(val tree: Tree) {
+class ResProgGen(val tree: Tree) {
   
   private val sigs =
     scala.collection.mutable.Map[Node, (String, List[Var])]()

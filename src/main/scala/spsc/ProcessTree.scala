@@ -24,10 +24,8 @@ class Node(val nodeId: Int,
     ancestors.find { n => isFGCall(n.term) && equiv(term, n.term) }.orNull
 }
 
-class Tree(val freeId: Int,
-           val root: Node,
-           val children: Map[Node, List[Node]]) {
-  
+case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
+
   def addChildren(n: Node, cs: List[(Term, Contraction)]): Tree = {
     var i = freeId - 1
     new Tree(freeId+cs.length, root,
@@ -77,4 +75,8 @@ object Tree {
     new Tree(freeId = 1,
       root = new Node(nodeId = 0, term = term, parent = null, contr = null),
                       children = Map().withDefaultValue(Nil))
+}
+
+trait TreeBuilder {
+  def buildProcessTree(term: Term): Tree
 }

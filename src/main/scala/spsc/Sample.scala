@@ -149,7 +149,7 @@ object Sample {
     val target = SLLParsers.parseTerm(targetText)
     val builder = new AdvancedTreeBuilder(program)
     val tree = builder.buildProcessTree(target)
-    val Task(resTerm, resProgram) = new ResidualProgramGenerator(tree).result
+    val Task(resTerm, resProgram) = new ResProgGen(tree).result
     println("** runSuperCompiler **"); println()
     println(target); println(); println(program)
     println(); println()
@@ -162,7 +162,7 @@ object Sample {
     val target = SLLParsers.parseTerm(targetText)
     val builder = new BasicTreeBuilder(program)
     val tree = builder.buildProcessTree(target)
-    val Task(resTerm, resProgram) = new ResidualProgramGenerator(tree).result
+    val Task(resTerm, resProgram) = new ResProgGen(tree).result
     println("** runBaseSuperCompiler **"); println()
     println(target); println(); println(program)
     println(); println()

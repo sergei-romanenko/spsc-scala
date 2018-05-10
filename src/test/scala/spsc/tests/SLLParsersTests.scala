@@ -27,7 +27,7 @@ class SLLParsersTests  extends FunSuite {
 
   test(testName = "parseProg") {
     pProg("f(x,y) = f(y, x);g(C(x),y) = g(y, x);",
-      "f(x,y)=f(y,x);\ng(C(x),y)=g(y,x);")
+      "f(x,y)=f(y,x);g(C(x),y)=g(y,x);")
   }
 
   test(testName = "parseTask") {

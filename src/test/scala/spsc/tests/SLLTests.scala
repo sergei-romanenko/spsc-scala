@@ -40,17 +40,12 @@ class SLLTests extends FunSuite {
     assert(Program(List(
       FRule("f", List(), Ctr("A", List())),
       FRule("f1", List(), Ctr("A1", List())))).toString
-      ===
-      """f()=A();
-f1()=A1();""")
+      === "f()=A();f1()=A1();")
     assert(Program(List(
       GRule("g", Pat("C", List()), List(), Ctr("A", List())),
       GRule("g1", Pat("C", List()), List(Var("x")), Ctr("A", List())),
       GRule("g2", Pat("C", List(Var("x"))), List(), Ctr("A", List())))).toString
-      ===
-      """g(C())=A();
-g1(C(),x)=A();
-g2(C(x))=A();""")
+      === "g(C())=A();g1(C(),x)=A();g2(C(x))=A();")
   }
 
   test(testName = "Term.equals 201 Eq") {

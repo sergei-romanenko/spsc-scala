@@ -61,7 +61,7 @@ case class Program(rules: List[Rule]){
   val gs: Map[String, List[GRule]] = (g :\ Map[String, List[GRule]]())
     {case (((n, _), d), m) => m + (n -> (d :: m.getOrElse(n, Nil)))}
 
-  override def toString: String = rules.mkString("\n")
+  override def toString: String = rules.mkString("")
 }
 
 case class Task(term: Term, prog: Program) {
