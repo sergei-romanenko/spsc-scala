@@ -4,7 +4,7 @@ import org.scalatest.FunSuite
 import spsc._
 
 
-class SLanguageTests extends FunSuite {
+class SLLTests extends FunSuite {
 
   def assertToStr(t: Term, s: String): Unit = {
     assert(t.toString === s)

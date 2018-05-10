@@ -7,8 +7,8 @@ class ResidualProgramGenerator(val tree: Tree) {
     scala.collection.mutable.Map[Node, (String, List[Var])]()
   private val defs =
     new scala.collection.mutable.ListBuffer[Rule]
-  lazy val result: (Term, Program) =
-    (walk(tree.root), Program(defs.toList))
+  lazy val result: Task =
+    Task (walk(tree.root), Program(defs.toList))
   
   private def walk(n: Node): Term =
     if (n.funcAncestor == null) n.term match {

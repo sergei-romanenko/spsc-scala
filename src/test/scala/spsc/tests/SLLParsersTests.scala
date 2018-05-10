@@ -3,18 +3,18 @@ package spsc.tests
 import org.scalatest.FunSuite
 import spsc._
 
-class SParsersTests  extends FunSuite {
+class SLLParsersTests  extends FunSuite {
 
   def pTerm(g: String, e: String): Unit = {
-    assert(SParsers.parseTerm(g).toString == e)
+    assert(SLLParsers.parseTerm(g).toString == e)
   }
 
   def pProg(g: String, e: String): Unit = {
-    assert(SParsers.parseProg(g).toString == e)
+    assert(SLLParsers.parseProg(g).toString == e)
   }
 
   def pTask(g: String, e: String): Unit = {
-    assert(SParsers.parseTask(g).toString == e)
+    assert(SLLParsers.parseTask(g).toString == e)
   }
 
   test(testName = "parseTerm") {

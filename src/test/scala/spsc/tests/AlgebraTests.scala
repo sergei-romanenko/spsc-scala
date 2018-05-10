@@ -16,20 +16,20 @@ class AlgebraTests extends FunSuite {
   }
 
   test(testName = "201 applySubst") {
-    val e1 = SParsers.parseTerm("E1()")
-    val e2 = SParsers.parseTerm("E2()")
-    val e = SParsers.parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
+    val e1 = SLLParsers.parseTerm("E1()")
+    val e2 = SLLParsers.parseTerm("E2()")
+    val e = SLLParsers.parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
     val subst = Map(Var("x1") -> e1, Var("x2") -> e2)
     assert(applySubst(subst, e).toString
       == "Cons(E1(),Cons(E2(),Cons(x3,Nil())))")
   }
 
   test(testName = "302 vars") {
-    val e = SParsers.parseTerm("A(x,B(y,z),a)")
+    val e = SLLParsers.parseTerm("A(x,B(y,z),a)")
     assert(vars(e)
       == List(Var("x"), Var("y"), Var("z"), Var("a")))
 
-    val e1 = SParsers.parseTerm("A(x,B(y,x),a)")
+    val e1 = SLLParsers.parseTerm("A(x,B(y,x),a)")
     assert(vars(e1)
       == List(Var("x"), Var("y"), Var("a")))
   }
@@ -46,12 +46,12 @@ class AlgebraTests extends FunSuite {
   }
 
   def matchOK(pat: String, term: String, expected: String): Unit = {
-    val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(term))
+    val subst = matchAgainst(SLLParsers.parseTerm(pat), SLLParsers.parseTerm(term))
     assert(substToString(subst) == expected)
   }
 
   def matchNo(pat: String, term: String): Unit = {
-    val subst = matchAgainst(SParsers.parseTerm(pat), SParsers.parseTerm(term))
+    val subst = matchAgainst(SLLParsers.parseTerm(pat), SLLParsers.parseTerm(term))
     assert(substToString(subst) == null)
   }
 
@@ -88,11 +88,11 @@ class AlgebraTests extends FunSuite {
   }
 
   def equivYes(e1: String, e2: String): Unit = {
-    assert(equiv(SParsers.parseTerm(e1), SParsers.parseTerm(e2)))
+    assert(equiv(SLLParsers.parseTerm(e1), SLLParsers.parseTerm(e2)))
   }
 
   def equivNo(e1: String, e2: String): Unit = {
-    assert(!equiv(SParsers.parseTerm(e1), SParsers.parseTerm(e2)))
+    assert(!equiv(SLLParsers.parseTerm(e1), SLLParsers.parseTerm(e2)))
   }
 
   test(testName = "501 equiv") {

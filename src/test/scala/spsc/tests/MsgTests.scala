@@ -9,7 +9,7 @@ class MsgTests extends FunSuite {
 
   def msgOK(e1: String, e2: String, expected: String): Unit = {
     resetVarGen()
-    val gen = msg(SParsers.parseTerm(e1), SParsers.parseTerm(e2))
+    val gen = msg(SLLParsers.parseTerm(e1), SLLParsers.parseTerm(e2))
     assert(gen.toString == expected)
   }
 

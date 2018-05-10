@@ -120,36 +120,36 @@ object Sample {
   
   def main1(args: Array[String]): Unit = {
 
-    runBaseSuperCompiler(target7, program7)
-    runBaseSuperCompiler(target1, program1)
-    runSuperCompiler(target1, program1)
+    runBasicBuilder(target7, program7)
+    runBasicBuilder(target1, program1)
+    runAdvancedBuilder(target1, program1)
     
-    runBaseSuperCompiler(target2, program2)
-    runSuperCompiler(target2, program2)
+    runBasicBuilder(target2, program2)
+    runAdvancedBuilder(target2, program2)
     
     // BaseSuperCompiler will not terminate for input 3
     // because generalization is needed
-    runSuperCompiler(target3, program3)
+    runAdvancedBuilder(target3, program3)
     
-    runBaseSuperCompiler(target4, program4)
-    runSuperCompiler(target4, program4)
+    runBasicBuilder(target4, program4)
+    runAdvancedBuilder(target4, program4)
     
-    runBaseSuperCompiler(target5, program5)
-    runSuperCompiler(target5, program5)
+    runBasicBuilder(target5, program5)
+    runAdvancedBuilder(target5, program5)
     
-    runBaseSuperCompiler(target6, program6)
-    runSuperCompiler(target6, program6)
+    runBasicBuilder(target6, program6)
+    runAdvancedBuilder(target6, program6)
     
-    runSuperCompiler(target7, program7)
-    runSuperCompiler(target8, program8)
+    runAdvancedBuilder(target7, program7)
+    runAdvancedBuilder(target8, program8)
   }
   
-  def runSuperCompiler(targetText: String, programText: String): Unit = {
-    val program = SParsers.parseProg(programText)
-    val target = SParsers.parseTerm(targetText)
-    val sc = new AdvancedSupercompiler(program)
-    val pt = sc.buildProcessTree(target)
-    val (resTerm, resProgram) = new ResidualProgramGenerator(pt).result
+  def runAdvancedBuilder(targetText: String, programText: String): Unit = {
+    val program = SLLParsers.parseProg(programText)
+    val target = SLLParsers.parseTerm(targetText)
+    val builder = new AdvancedTreeBuilder(program)
+    val tree = builder.buildProcessTree(target)
+    val Task(resTerm, resProgram) = new ResidualProgramGenerator(tree).result
     println("** runSuperCompiler **"); println()
     println(target); println(); println(program)
     println(); println()
@@ -157,12 +157,12 @@ object Sample {
     println("-------")
   }
   
-  def runBaseSuperCompiler(targetText: String, programText: String): Unit = {
-    val program = SParsers.parseProg(programText)
-    val target = SParsers.parseTerm(targetText)
-    val sc = new BasicSupercompiler(program)
-    val pt = sc.buildProcessTree(target)
-    val (resTerm, resProgram) = new ResidualProgramGenerator(pt).result
+  def runBasicBuilder(targetText: String, programText: String): Unit = {
+    val program = SLLParsers.parseProg(programText)
+    val target = SLLParsers.parseTerm(targetText)
+    val builder = new BasicTreeBuilder(program)
+    val tree = builder.buildProcessTree(target)
+    val Task(resTerm, resProgram) = new ResidualProgramGenerator(tree).result
     println("** runBaseSuperCompiler **"); println()
     println(target); println(); println(program)
     println(); println()

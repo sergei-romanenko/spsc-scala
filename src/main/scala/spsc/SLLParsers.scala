@@ -5,53 +5,53 @@ import scala.util.parsing.combinator.ImplicitConversions
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 import scala.util.parsing.input.{CharSequenceReader => Reader}
 
-object SParsers extends StandardTokenParsers with ImplicitConversions {
+object SLLParsers extends StandardTokenParsers with ImplicitConversions {
   lexical.delimiters += ("(", ")", ",", "=", ";")
   lexical.reserved += "where"
 
-  def task: SParsers.Parser[Task] =
+  def task: SLLParsers.Parser[Task] =
     term ~ ("where" ~> prog) ^^ Task
 
-  def prog : SParsers.Parser[Program] =
+  def prog : SLLParsers.Parser[Program] =
     (definition*) ^^ Program
 
-  def definition: SParsers.Parser[Rule] =
+  def definition: SLLParsers.Parser[Rule] =
     gRule | fRule
 
-  def term: SParsers.Parser[Term] =
+  def term: SLLParsers.Parser[Term] =
     fcall | gcall | ctr | vrb
 
-  def uid: SParsers.Parser[String] =
+  def uid: SLLParsers.Parser[String] =
     ident ^? {case id if id.charAt(0).isUpper => id}
 
-  def lid: SParsers.Parser[String] =
+  def lid: SLLParsers.Parser[String] =
     ident ^? {case id if id.charAt(0).isLower => id}
 
-  def fid: SParsers.Parser[String] =
+  def fid: SLLParsers.Parser[String] =
     ident ^? {case id if id.charAt(0) == 'f' => id}
 
-  def gid: SParsers.Parser[String] =
+  def gid: SLLParsers.Parser[String] =
     ident ^? {case id if id.charAt(0) == 'g' => id}
 
-  def vrb: SParsers.Parser[Var] =
+  def vrb: SLLParsers.Parser[Var] =
     lid ^^ Var
 
-  def pat: SParsers.Parser[Pat] =
+  def pat: SLLParsers.Parser[Pat] =
     uid ~ ("(" ~> repsep(vrb, ",") <~ ")") ^^ Pat
 
-  def fRule: SParsers.Parser[FRule] =
+  def fRule: SLLParsers.Parser[FRule] =
     fid ~ ("(" ~> repsep(vrb, ",") <~ ")") ~ ("=" ~> term <~ ";") ^^ FRule
 
-  def gRule: SParsers.Parser[GRule] =
+  def gRule: SLLParsers.Parser[GRule] =
     gid ~ ("(" ~> pat) ~ ((("," ~> vrb)*) <~ ")") ~ ("=" ~> term <~ ";") ^^ GRule
 
-  def ctr: SParsers.Parser[CFG] =
+  def ctr: SLLParsers.Parser[CFG] =
     uid ~ ("(" ~> repsep(term, ",") <~ ")") ^^ Ctr
 
-  def fcall: SParsers.Parser[CFG] =
+  def fcall: SLLParsers.Parser[CFG] =
     fid ~ ("(" ~> repsep(term, ",") <~ ")") ^^ FCall
 
-  def gcall: SParsers.Parser[CFG] =
+  def gcall: SLLParsers.Parser[CFG] =
     gid ~ ("(" ~> repsep(term, ",") <~ ")") ^^ GCall
 
   def parseTerm(s: String): Term =

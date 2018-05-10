@@ -7,24 +7,24 @@ import spsc._
 class HeTests extends FunSuite {
 
   def heTrue(t1: String, t2: String): Unit = {
-    val e1 = SParsers.parseTerm(t1)
-    val e2 = SParsers.parseTerm(t2)
+    val e1 = SLLParsers.parseTerm(t1)
+    val e2 = SLLParsers.parseTerm(t2)
     assert(he(e1, e2))
   }
 
   def heFalse(t1: String, t2: String): Unit = {
-    val e1 = SParsers.parseTerm(t1)
-    val e2 = SParsers.parseTerm(t2)
+    val e1 = SLLParsers.parseTerm(t1)
+    val e2 = SLLParsers.parseTerm(t2)
     assert(!he(e1, e2))
   }
 
   def varAttackTrue(t: String): Unit = {
-    val e = SParsers.parseTerm(t)
+    val e = SLLParsers.parseTerm(t)
     assert(aVarIsUnderAttack(e))
   }
 
   def varAttackFalse(s: String): Unit = {
-    val e = SParsers.parseTerm(s)
+    val e = SLLParsers.parseTerm(s)
     assert(!aVarIsUnderAttack(e))
   }
 

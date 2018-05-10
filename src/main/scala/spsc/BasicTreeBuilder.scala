@@ -2,7 +2,7 @@ package spsc
 
 import Algebra._
 
-class BasicSupercompiler(p: Program) {
+class BasicTreeBuilder(p: Program) {
 
   def driveTerm(term: Term): List[(Term, Contraction)] = term match {
     case Ctr(name, args) => args.map((_, null))
