@@ -34,12 +34,16 @@ case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
     }
 
   def replace(n: Node, term: Term): Tree =
-    if (n == root) new Tree(freeId, n, Map().withDefaultValue(Nil))
+    if (n == root)
+      new Tree(freeId,
+        new Node(n.nodeId, term, parent = null, contr = null),
+        Map().withDefaultValue(Nil))
     else {
       val p = n.parent
-      val cs = children(p) map {m =>
-        if (m == n) new Node(freeId, term, p, n.contr) else m}
-      new Tree(freeId+1, root, children + (p -> cs))
+      val cs = children(p) map { m =>
+        if (m == n) new Node(freeId, term, p, n.contr) else m
+      }
+      new Tree(freeId + 1, root, children + (p -> cs))
     }
   
   def leaves_(node: Node): List[Node] = 

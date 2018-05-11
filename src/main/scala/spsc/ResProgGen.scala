@@ -2,13 +2,14 @@ package spsc
 import Algebra._
 
 class ResProgGen(val tree: Tree) {
-  
+
   private val sigs =
     scala.collection.mutable.Map[Node, (String, List[Var])]()
   private val defs =
     new scala.collection.mutable.ListBuffer[Rule]
   lazy val result: Task =
-    Task (walk(tree.root), Program(defs.toList))
+    Task(walk(tree.root), Program(defs.toList.sortWith(
+      (r1, r2) => r1.name < r2.name)))
   
   private def walk(n: Node): Term =
     if (n.funcAncestor == null) n.term match {

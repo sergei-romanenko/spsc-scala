@@ -10,8 +10,7 @@ object TKind extends Enumeration {
   val Ctr, FCall, GCall = Value
 }
 
-case class CFG(kind: TKind.Value, name: String, args: List[Term])
-    extends Term {
+case class CFG(kind: TKind.Value, name: String, args: List[Term]) extends Term {
   def replaceArgs(newArgs: List[Term]) = CFG(kind, name, newArgs)
   override def toString: String = name + args.mkString("(",",",")")
 }
@@ -52,14 +51,20 @@ case class GRule(name: String, p: Pat, args: List[Var], term: Term) extends Rule
 
 case class Program(rules: List[Rule]){
 
-  val f: Map[String, FRule] = (rules :\ Map[String, FRule]())
-    {case (d: FRule, m) => m + (d.name -> d); case (_, m) => m}
+  val f: Map[String, FRule] = (rules :\ Map[String, FRule]()) {
+    case (r: FRule, m) => m + (r.name -> r);
+    case (_, m) => m
+  }
 
-  val g: Map[(String, String), GRule] = (rules :\ Map[(String, String), GRule]())
-    {case (d: GRule, m) => m + ((d.name, d.p.name) -> d); case (_, m) => m}
+  val g: Map[(String, String), GRule] = (rules :\ Map[(String, String), GRule]()) {
+    case (r: GRule, m) => m + ((r.name, r.p.name) -> r)
+    case (_, m) => m
+  }
 
-  val gs: Map[String, List[GRule]] = (g :\ Map[String, List[GRule]]())
-    {case (((n, _), d), m) => m + (n -> (d :: m.getOrElse(n, Nil)))}
+  val gs: Map[String, List[GRule]] = (rules :\ Map[String, List[GRule]]()) {
+    case (r: GRule, m) => m + (r.name -> (r :: m.getOrElse(r.name, Nil)))
+    case (_, m) => m
+  }
 
   override def toString: String = rules.mkString("")
 }

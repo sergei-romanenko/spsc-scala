@@ -6,6 +6,8 @@ import Algebra._
 
 class BasicTreeBuilder(p: Program) extends TreeBuilder {
 
+  def freshPat(p: Pat) = Pat(p.name, p.args map freshVar)
+
   def driveTerm(term: Term): List[(Term, Contraction)] = term match {
     case Ctr(name, args) =>
       args.map((_, null))
@@ -22,7 +24,8 @@ class BasicTreeBuilder(p: Program) extends TreeBuilder {
         }
     case GCall(name, args) =>
       driveTerm(args.head) map { case (k, v) => (GCall(name, k :: args.tail), v) }
-    case Let(term0, bs) => (term0, null) :: bs.map { case (_, v) => (v, null) }
+    case Let(term0, bs) =>
+      (term0, null) :: bs.map { case (_, v) => (v, null) }
   }
 
   def buildStep(t: Tree, b: Node): Tree = {
@@ -35,30 +38,14 @@ class BasicTreeBuilder(p: Program) extends TreeBuilder {
   }
 
   @tailrec
-  private def buildLoop(t: Tree): Tree = t.leaves.find(!_.isProcessed) match {
-    case None => t
-    case Some(b) => buildLoop(buildStep(t, b))
+  private def buildLoop(t: Tree): Tree = {
+    t.leaves.find(!_.isProcessed) match {
+      case None => t
+      case Some(b) => buildLoop(buildStep(t, b))
+    }
   }
 
   def buildProcessTree(term: Term): Tree =
     buildLoop(Tree.create(term))
 
-    /*
-      def buildProcessTree(term: Term): Tree = {
-        var t = Tree.create(term)
-        while (t.leaves.exists(!_.isProcessed)) {
-          val b = t.leaves.find(!_.isProcessed).get
-          t = b.ancestors.find(a => isFGCall(a.term) && instOf(b.term, a.term))
-          match {
-            case Some(a) =>
-              t.replace(b, Let(a.term, matchAgainst(a.term, b.term).toList))
-            case None =>
-              t.addChildren(b, driveTerm(b.term)) // drive
-          }
-        }
-        t
-      }
-    */
-
-  def freshPat(p: Pat) = Pat(p.name, p.args map freshVar)
 }
