@@ -13,7 +13,7 @@ class SLLTests extends FunSuite {
   test(testName = "Term.toString 101 StrVarAndCall") {
     assertToStr(Var("x"), "x")
     assertToStr(Ctr("A", List(Var("x"), Var("y"))), "A(x,y)")
-    assertToStr(Ctr("C", List()), "C()")
+    assertToStr(Ctr("C", List()), "C")
     assertToStr(FCall("fX", List(Var("x"), Var("y"))), "fX(x,y)")
     assertToStr(GCall("gX", List(Var("x"), Var("y"))), "gX(x,y)")
   }
@@ -31,21 +31,21 @@ class SLLTests extends FunSuite {
     assert(GRule("g", Pat("C", List(Var("x"))), List(Var("y")), Var("y")).toString
       === "g(C(x),y)=y;")
     assert(GRule("g", Pat("C", List()), List(Var("y")), Var("y")).toString
-      === "g(C(),y)=y;")
+      === "g(C,y)=y;")
     assert(GRule("g", Pat("C", List()), List(), Ctr("C", List())).toString
-      === "g(C())=C();")
+      === "g(C)=C;")
   }
 
   test(testName = "Program.toString 104 StrProgram") {
     assert(Program(List(
       FRule("f", List(), Ctr("A", List())),
       FRule("f1", List(), Ctr("A1", List())))).toString
-      === "f()=A();f1()=A1();")
+      === "f()=A;f1()=A1;")
     assert(Program(List(
       GRule("g", Pat("C", List()), List(), Ctr("A", List())),
       GRule("g1", Pat("C", List()), List(Var("x")), Ctr("A", List())),
       GRule("g2", Pat("C", List(Var("x"))), List(), Ctr("A", List())))).toString
-      === "g(C())=A();g1(C(),x)=A();g2(C(x))=A();")
+      === "g(C)=A;g1(C,x)=A;g2(C(x))=A;")
   }
 
   test(testName = "Term.equals 201 Eq") {

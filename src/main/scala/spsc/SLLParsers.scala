@@ -36,8 +36,11 @@ object SLLParsers extends StandardTokenParsers with ImplicitConversions {
   def vrb: SLLParsers.Parser[Var] =
     lid ^^ Var
 
+  def patParams : SLLParsers.Parser[List[Var]] =
+    (("(" ~> repsep(vrb, ",") <~ ")") ?) ^^ {_.getOrElse(Nil)}
+
   def pat: SLLParsers.Parser[Pat] =
-    uid ~ ("(" ~> repsep(vrb, ",") <~ ")") ^^ Pat
+    uid ~ patParams ^^ Pat
 
   def fRule: SLLParsers.Parser[FRule] =
     fid ~ ("(" ~> repsep(vrb, ",") <~ ")") ~ ("=" ~> term <~ ";") ^^ FRule
@@ -45,8 +48,11 @@ object SLLParsers extends StandardTokenParsers with ImplicitConversions {
   def gRule: SLLParsers.Parser[GRule] =
     gid ~ ("(" ~> pat) ~ ((("," ~> vrb)*) <~ ")") ~ ("=" ~> term <~ ";") ^^ GRule
 
+  def ctrArgs: SLLParsers.Parser[List[Term]] =
+    (("(" ~> repsep(term, ",") <~ ")") ?) ^^ {_.getOrElse(Nil)}
+
   def ctr: SLLParsers.Parser[CFG] =
-    uid ~ ("(" ~> repsep(term, ",") <~ ")") ^^ Ctr
+    uid ~ ctrArgs ^^ Ctr
 
   def fcall: SLLParsers.Parser[CFG] =
     fid ~ ("(" ~> repsep(term, ",") <~ ")") ^^ FCall

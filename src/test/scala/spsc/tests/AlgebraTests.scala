@@ -16,12 +16,12 @@ class AlgebraTests extends FunSuite {
   }
 
   test(testName = "201 applySubst") {
-    val e1 = SLLParsers.parseTerm("E1()")
-    val e2 = SLLParsers.parseTerm("E2()")
+    val e1 = SLLParsers.parseTerm("E1")
+    val e2 = SLLParsers.parseTerm("E2")
     val e = SLLParsers.parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
     val subst = Map(Var("x1") -> e1, Var("x2") -> e2)
     assert(applySubst(subst, e).toString
-      == "Cons(E1(),Cons(E2(),Cons(x3,Nil())))")
+      == "Cons(E1,Cons(E2,Cons(x3,Nil)))")
   }
 
   test(testName = "302 vars") {
@@ -56,15 +56,15 @@ class AlgebraTests extends FunSuite {
   }
 
   test(testName = "401 matchAgainst") {
-    matchOK(pat = "x", term = "S(Z())", expected = "x->S(Z());")
+    matchOK(pat = "x", term = "S(Z)", expected = "x->S(Z);")
   }
 
   test(testName = "402 matchAgainst") {
-    matchNo(pat = "Z()", term = "x")
+    matchNo(pat = "Z", term = "x")
   }
 
   test(testName = "403 matchAgainst") {
-    matchOK(pat = "C(x,y)", term = "C(A(),B())", expected = "x->A();y->B();")
+    matchOK(pat = "C(x,y)", term = "C(A,B)", expected = "x->A;y->B;")
   }
 
   test(testName = "404 matchAgainst") {
@@ -76,15 +76,15 @@ class AlgebraTests extends FunSuite {
   }
 
   test(testName = "406 matchAgainst") {
-    matchOK(pat = "C(x,x)", term = "C(A(),A())", expected = "x->A();")
+    matchOK(pat = "C(x,x)", term = "C(A,A)", expected = "x->A;")
   }
 
   test(testName = "407 matchAgainst") {
-    matchNo(pat = "C(x,y)", term = "C(A(),B(),C())")
+    matchNo(pat = "C(x,y)", term = "C(A,B,C)")
   }
 
   test(testName = "408 matchAgainst") {
-    matchNo(pat = "C(x,y,z)", term = "C(A(),B())")
+    matchNo(pat = "C(x,y,z)", term = "C(A,B)")
   }
 
   def equivYes(e1: String, e2: String): Unit = {
@@ -96,7 +96,7 @@ class AlgebraTests extends FunSuite {
   }
 
   test(testName = "501 equiv") {
-    equivYes(e1 = "gA(fB(x,y),C())", e2 = "gA(fB(a,b),C())")
+    equivYes(e1 = "gA(fB(x,y),C)", e2 = "gA(fB(a,b),C)")
   }
 
   test(testName = "502 equiv") {

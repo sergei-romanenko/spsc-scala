@@ -7,8 +7,8 @@ import spsc._
 
 class BasicTreeBuilderTests extends FunSuite {
 
-  val pAdd = "gAdd(Z(),y)=y;gAdd(S(x),y)=S(gAdd(x,y));"
-  val pAddAcc = "gAddAcc(Z(),y)=y;gAddAcc(S(x),y)=gAddAcc(x,S(y));"
+  val pAdd = "gAdd(Z,y)=y;gAdd(S(x),y)=S(gAdd(x,y));"
+  val pAddAcc = "gAddAcc(Z,y)=y;gAddAcc(S(x),y)=gAddAcc(x,S(y));"
 
   def drStep(prog: String, e: String, expected: String): Unit =
     drStep0(SLLParsers.parseProg(prog), SLLParsers.parseTerm(e), expected)
@@ -33,18 +33,18 @@ class BasicTreeBuilderTests extends FunSuite {
   }
 
   test(testName = "103 GCallCtr") {
-    drStep(prog = pAddAcc, e = "gAddAcc(S(S(Z())),Z())",
-      expected = "(gAddAcc(S(Z()),S(Z())),*)")
+    drStep(prog = pAddAcc, e = "gAddAcc(S(S(Z)),Z)",
+      expected = "(gAddAcc(S(Z),S(Z)),*)")
   }
 
   test(testName = "104 GCallVar") {
     drStep(prog = pAddAcc, e = "gAddAcc(a,b)",
-      expected = "(b,a=Z())+(gAddAcc(v1,S(b)),a=S(v1))")
+      expected = "(b,a=Z)+(gAddAcc(v1,S(b)),a=S(v1))")
   }
 
   test(testName = "105 GCallGeneral") {
     drStep(prog = pAddAcc, e = "gAddAcc(gAddAcc(a,b),c)",
-      expected = "(gAddAcc(b,c),a=Z())+(gAddAcc(gAddAcc(v1,S(b)),c),a=S(v1))")
+      expected = "(gAddAcc(b,c),a=Z)+(gAddAcc(gAddAcc(v1,S(b)),c),a=S(v1))")
   }
 
   test(testName = "106 Let") {
@@ -56,6 +56,6 @@ class BasicTreeBuilderTests extends FunSuite {
 
   test(testName = "107 a a") {
     drStep(pAdd, "gAdd(a,a)",
-      expected = "(Z(),a=Z())+(S(gAdd(v1,S(v1))),a=S(v1))")
+      expected = "(Z,a=Z)+(S(gAdd(v1,S(v1))),a=S(v1))")
   }
 }

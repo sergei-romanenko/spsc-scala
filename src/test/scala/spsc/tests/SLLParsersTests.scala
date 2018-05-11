@@ -19,15 +19,22 @@ class SLLParsersTests  extends FunSuite {
 
   test(testName = "parseTerm") {
     pTerm("x", "x")
-    pTerm("C()", "C()")
+    pTerm("C", "C")
+    pTerm("C()", "C")
     pTerm("C(x)", "C(x)")
     pTerm("C(x,y)", "C(x,y)")
     pTerm("fX(x,y)", "fX(x,y)")
-  }
+    pTerm("fX()", "fX()")
+    pTerm("gX(x,y)", "gX(x,y)")
+    pTerm("gX()", "gX()")
+ }
 
   test(testName = "parseProg") {
+
     pProg("f(x,y) = f(y, x);g(C(x),y) = g(y, x);",
       "f(x,y)=f(y,x);g(C(x),y)=g(y,x);")
+
+    pProg("g(Z,y)= y;", "g(Z,y)=y;")
   }
 
   test(testName = "parseTask") {

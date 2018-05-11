@@ -11,13 +11,21 @@ object TKind extends Enumeration {
 }
 
 case class CFG(kind: TKind.Value, name: String, args: List[Term]) extends Term {
+
   def replaceArgs(newArgs: List[Term]) = CFG(kind, name, newArgs)
-  override def toString: String = name + args.mkString("(",",",")")
+
+  override def toString: String =
+    if (kind == TKind.Ctr && args.isEmpty)
+      name
+    else
+      name + args.mkString("(", ",", ")")
 }
 
 abstract class CFGObject(kind: TKind.Value)
-    extends ((String, List[Term]) => CFG) {
+  extends Function2[String, List[Term], CFG] {
+
   def apply(name: String, args: List[Term]) = CFG(kind, name, args)
+
   def unapply(t: CFG): Option[(String, List[Term])] =
     if (t.kind == kind) Some(t.name, t.args) else None
 }
@@ -34,7 +42,11 @@ case class Let(term: Term, bindings: List[(Var, Term)]) extends Term {
 }
 
 case class Pat(name: String, args: List[Var]) {
-  override def toString: String = name + args.mkString("(",",",")")
+  override def toString: String =
+    if (args.isEmpty)
+      name
+    else
+      name + args.mkString("(", ",", ")")
 }
 
 abstract class Rule {def name: String}
