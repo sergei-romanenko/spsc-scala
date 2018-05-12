@@ -19,6 +19,7 @@ class SLLParsersTests  extends FunSuite {
 
   test(testName = "parseTerm") {
     pTerm("x", "x")
+    pTerm(" -- 111\nx --222\n --333", "x")
     pTerm("C", "C")
     pTerm("C()", "C")
     pTerm("C(x)", "C(x)")
