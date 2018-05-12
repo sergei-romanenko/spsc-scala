@@ -6,18 +6,18 @@ import Algebra._
 
 class BasicTreeBuilder(p: Program) extends TreeBuilder {
 
-  def freshPat(p: Pat) = Pat(p.name, p.args map freshVar)
+  def freshPat(p: Pat) = Pat(p.name, p.params map freshVar)
 
   def driveTerm(term: Term): List[(Term, Contraction)] = term match {
     case Ctr(name, args) =>
       args.map((_, null))
     case FCall(name, args) =>
-      List((applySubst(Map(p.f(name).args.zip(args): _*), p.f(name).term), null))
+      List((applySubst(Map(p.f(name).params.zip(args): _*), p.f(name).term), null))
     case GCall(name, Ctr(cname, cargs) :: args) =>
       val g = p.g(name, cname)
-      List((applySubst(Map((g.p.args ::: g.args) zip (cargs ::: args): _*), g.term), null))
+      List((applySubst(Map((g.pat.params ::: g.params) zip (cargs ::: args): _*), g.term), null))
     case gCall@GCall(name, (v: Var) :: args) =>
-      for (g <- p.gs(name); fp = freshPat(g.p); ctr = Ctr(fp.name, fp.args))
+      for (g <- p.gs(name); fp = freshPat(g.pat); ctr = Ctr(fp.name, fp.params))
         yield driveTerm(applySubst(Map(v -> ctr), gCall)) match {
           case (k, _) :: _ => (k, Contraction(v, fp))
           case _ => sys.error("BasicTreeBuilder")

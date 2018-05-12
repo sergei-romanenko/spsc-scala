@@ -33,17 +33,18 @@ class ResProgGen(val tree: Tree) {
   def walkCall(n: Node, name: String, args: List[Term]): Term = {
     val vs = vars(n.term)
     if (tree.children(n).head.contr != null) {
-      val (gname, _) = sigs.getOrElseUpdate(n, (rename(name, "g"), vs))
+      val (gname, _) = sigs.getOrElseUpdate(n, (rename(name), vs))
       for (cn <- tree.children(n)) 
         defs += GRule(gname, cn.contr.pat, vs.tail, walk(cn))
       GCall(gname, vs)
     } else if (tree.leaves.exists(_.funcAncestor == n)) {
-      val (fname, fargs) = sigs.getOrElseUpdate(n, (rename(name, "f"), vs))
+      val (fname, fargs) = sigs.getOrElseUpdate(n, (rename(name), vs))
       defs += FRule(fname, fargs, walk(tree.children(n).head))
       FCall(fname, vs)
     } else walk(tree.children(n).head)
   }
-  
-  def rename(f: String, b: String): String =
-    {b + f.drop(1) + (sigs.size + 1)}
+
+  def rename(f: String): String = {
+    f + (sigs.size + 1)
+  }
 }

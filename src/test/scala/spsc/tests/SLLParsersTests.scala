@@ -40,6 +40,9 @@ class SLLParsersTests  extends FunSuite {
   test(testName = "parseTask") {
     pTask("f(x) where f(x) = f(x);",
       "f(x) where f(x)=f(x);")
+
+    pTask("h(Z) where h(Z) = h(Z);",
+      "h(Z) where h(Z)=h(Z);")
   }
 
 }

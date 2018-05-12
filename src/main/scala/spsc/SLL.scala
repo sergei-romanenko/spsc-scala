@@ -41,24 +41,24 @@ case class Let(term: Term, bindings: List[(Var, Term)]) extends Term {
     "let " + bindings_s.mkString(",") + " in " + term.toString
 }
 
-case class Pat(name: String, args: List[Var]) {
+case class Pat(name: String, params: List[Var]) {
   override def toString: String =
-    if (args.isEmpty)
+    if (params.isEmpty)
       name
     else
-      name + args.mkString("(", ",", ")")
+      name + params.mkString("(", ",", ")")
 }
 
 abstract class Rule {def name: String}
 
-case class FRule(name: String, args: List[Var], term: Term) extends Rule {
+case class FRule(name: String, params: List[Var], term: Term) extends Rule {
   override def toString: String =
-    name + args.mkString("(",",",")") + "=" + term + ";"
+    name + params.mkString("(",",",")") + "=" + term + ";"
 }
 
-case class GRule(name: String, p: Pat, args: List[Var], term: Term) extends Rule {
+case class GRule(name: String, pat: Pat, params: List[Var], term: Term) extends Rule {
   override def toString: String =
-    name + (p :: args).mkString("(",",",")")  + "=" + term + ";"
+    name + (pat :: params).mkString("(",",",")")  + "=" + term + ";"
 }
 
 case class Program(rules: List[Rule]){
@@ -69,7 +69,7 @@ case class Program(rules: List[Rule]){
   }
 
   val g: Map[(String, String), GRule] = (rules :\ Map[(String, String), GRule]()) {
-    case (r: GRule, m) => m + ((r.name, r.p.name) -> r)
+    case (r: GRule, m) => m + ((r.name, r.pat.name) -> r)
     case (_, m) => m
   }
 
