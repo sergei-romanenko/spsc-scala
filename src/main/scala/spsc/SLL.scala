@@ -57,6 +57,7 @@ case class FRule(name: String, params: List[Var], term: Term) extends Rule {
 }
 
 case class GRule(name: String, pat: Pat, params: List[Var], term: Term) extends Rule {
+  val allParams: List[Var] = pat.params ++ params
   override def toString: String =
     name + (pat :: params).mkString("(",",",")")  + "=" + term + ";"
 }

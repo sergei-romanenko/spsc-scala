@@ -3,7 +3,7 @@ package spsc.tests
 import org.scalatest.FunSuite
 import spsc._
 
-class SLLParsersTests  extends FunSuite {
+class SLLParsersTests extends FunSuite {
 
   def pTerm(g: String, e: String): Unit = {
     assert(SLLParsers.parseTerm(g).toString == e)
@@ -28,7 +28,7 @@ class SLLParsersTests  extends FunSuite {
     pTerm("fX()", "fX()")
     pTerm("gX(x,y)", "gX(x,y)")
     pTerm("gX()", "gX()")
- }
+  }
 
   test(testName = "parseProg") {
 
