@@ -47,12 +47,12 @@ class BasicTreeBuilderTests extends FunSuite {
       expected = "(gAddAcc(b,c),a=Z)+(gAddAcc(gAddAcc(v1,S(b)),c),a=S(v1))")
   }
 
-  test(testName = "106 Let") {
-    drStep0(prog = Program(Nil),
-      term = Let(Ctr("C", List(Var("x"), Var("y"))),
-        List(("x", Var("a")), ("y", Var("b")))),
-      expected = "(C(x,y),*)+(a,*)+(b,*)")
-  }
+//  test(testName = "106 Let") {
+//    drStep0(prog = Program(Nil),
+//      term = Let(Ctr("C", List(Var("x"), Var("y"))),
+//        List(("x", Var("a")), ("y", Var("b")))),
+//      expected = "(C(x,y),*)+(a,*)+(b,*)")
+//  }
 
   test(testName = "107 a a") {
     drStep(pAdd, "gAdd(a,a)",

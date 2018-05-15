@@ -43,17 +43,16 @@ class BasicTreeBuilder(prog: Program) extends TreeBuilder {
       for ((t, c) <- bs) yield
         (GCall(name, t :: args.map(applyContr(c))), c)
     case Let(term0, bs) =>
-      (term0, null) :: bs.map { case (_, v) => (v, null) }
+      sys.error("driveTerm")
   }
 
-  def buildStep(t: Tree, b: Node): Tree = {
+  def buildStep(t: Tree, b: Node): Tree =
     b.ancestors.find(a => isFGCall(a.term) && instOf(b.term, a.term)) match {
       case None =>
         t.addChildren(b, driveTerm(b.term))
       case Some(a) =>
-        t.replace(b, Let(a.term, matchAgainst(a.term, b.term).toList))
+        t.decompose(b, a.term, matchAgainst(a.term, b.term).toList)
     }
-  }
 
   @tailrec
   private def buildLoop(t: Tree): Tree = {

@@ -15,7 +15,7 @@ class ProcessTreeTests extends FunSuite with BeforeAndAfter {
     val m1 = tree.children(r).head
     val m2 = tree.children(r).tail.head
     tree = tree.addChildren(m1, List((Var("n"), null)))
-    tree = tree.replace(m2, Var("x"))
+    tree = tree.replace(m2, Var("x"))._1
   }
 
   test(testName = "01 Tree.toString") {
