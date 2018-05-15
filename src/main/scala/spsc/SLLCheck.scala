@@ -30,11 +30,11 @@ class SLLCheck(val task: Task) {
 
   def ifgNames(): Option[String] =
     for (f <- fNames.intersect(gNames).headOption) yield
-      f + " is both f- and g-function"
+      f"$f is both f- and g-function"
 
   def ihpNames(): Option[String] =
     for (f <- hNames.intersect(pNames).headOption) yield
-      f + " is both a function and a parameter"
+      f"$f is both a function and a parameter"
 
   // Collecting variable names.
 
@@ -56,19 +56,18 @@ class SLLCheck(val task: Task) {
 
   def rnFRule(fRule: FRule): Option[String] = {
     for (n <- repeatedName(fRule.params.map(_.name)))
-      yield n + " is repeated in the parameters of " + fRule.name
+      yield f"$n is repeated in the parameters of ${fRule.name}"
   }
 
   def rnGRule(gRule: GRule): Option[String] = {
     for (n <- repeatedName(gRule.allParams.map(_.name)))
-      yield n + " is repeated in the parameters of " + gRule.name
+      yield f"$n is repeated in the parameters of ${gRule.name}"
   }
 
   def rcGRules(name: String): Option[String] = {
     val cs = for (r <- gRules if name == r.name) yield r.pat.name
     for (c <- repeatedName(cs))
-      yield "In the definition of " + name + ", " +
-        c + " appears twice in the patterns"
+      yield f"In the definition of $name, $c appears twice in the patterns"
   }
 
   // A variable must be a parameter.
@@ -77,14 +76,14 @@ class SLLCheck(val task: Task) {
     var ps = fRule.params.map(_.name)
     var vs = vTerm(fRule.term)
     for (v <- vs.find(!ps.contains(_))) yield
-      "In the definition of " + fRule.name + ", " + v + " is not a parameter"
+      f"In the definition of ${fRule.name}, $v is not a parameter"
   }
 
   def pvGRule(gRule: GRule): Option[String] = {
     var ps = gRule.allParams.map(_.name)
     var vs = vTerm(gRule.term)
     for (v <- vs.find(!ps.contains(_))) yield
-      "In the definition of " + gRule.name + ", " + v + " is not a parameter"
+      f"In the definition of ${gRule.name}, $v is not a parameter"
   }
 
   // Collecting function names.
@@ -106,17 +105,17 @@ class SLLCheck(val task: Task) {
 
   def uFRule(fRule: FRule): Option[String] =
     for (f <- dTerm(fRule.term)) yield
-      "In the definition of " + fRule.name +
-        ", there is a call to an undefined function " + f
+      f"In the definition of ${fRule.name}" +
+        f", there is a call to an undefined function $f"
 
   def uGRule(gRule: GRule): Option[String] =
     for (f <- dTerm(gRule.term)) yield
-      "In the definition of " + gRule.name +
-        ", there is a call to an undefined function " + f
+      f"In the definition of ${gRule.name}" +
+        f", there is a call to an undefined function $f"
 
   def uTerm(term: Term): Option[String] =
     for (f <- dTerm(term)) yield
-      "In the initial term, " + "there is a call to an undefined function " + f
+      f"In the initial term, there is a call to an undefined function $f"
 
   def checkTask(): Option[String] =
     ifgNames() orElse
@@ -155,7 +154,7 @@ trait ArChecker {
       case Some(k1) =>
         if (k == k1)
           None
-        else Some(name + " has inconsistent arity: " + k + " and " + k1)
+        else Some(f"$name has inconsistent arity: $k and $k1")
     }
   }
 }
