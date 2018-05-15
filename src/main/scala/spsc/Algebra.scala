@@ -33,7 +33,7 @@ object Algebra {
   def vars: Term => List[String] = {
     case v: Var => List(v.name)
     case t: CFG =>
-      (List[String]() /: t.args) {(ns, term) =>  (ns ++ vars(term)).distinct}
+      (List[String]() /: t.args) {(ns, term) =>  (ns ::: vars(term)).distinct}
   }
   
   private var i = 0

@@ -36,7 +36,7 @@ object GCall extends CFGObject(TKind.GCall)
 
 case class Let(term: Term, bindings: List[(String, Term)]) extends Term {
   val bindings_s: List[String] =
-    bindings map {case (v, e) => v.toString() + "=" + e.toString}
+    bindings map {case (v, e) => v + "=" + e.toString}
   override def toString: String =
     "let " + bindings_s.mkString(",") + " in " + term.toString
 }
@@ -57,7 +57,7 @@ case class FRule(name: String, params: List[String], term: Term) extends Rule {
 }
 
 case class GRule(name: String, pat: Pat, params: List[String], term: Term) extends Rule {
-  val allParams: List[String] = pat.params ++ params
+  val allParams: List[String] = pat.params ::: params
   override def toString: String =
     name + (pat :: params).mkString("(",",",")")  + "=" + term + ";"
 }
