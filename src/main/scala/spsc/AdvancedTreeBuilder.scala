@@ -11,8 +11,8 @@ class AdvancedTreeBuilder(p: Program) extends BasicTreeBuilder(p) {
 
   def split(t: Tree, n: Node): Tree = n.term match {
     case term: CFG =>
-      val vs = term.args map freshVar
-      t.replace(n, Let(term.replaceArgs(vs), vs zip term.args))
+      val ns = term.args.map(_ => freshVarName())
+      t.replace(n, Let(term.replaceArgs(ns.map(Var)), ns.zip(term.args)))
   }
 
   override def buildStep(t: Tree, b: Node): Tree = {

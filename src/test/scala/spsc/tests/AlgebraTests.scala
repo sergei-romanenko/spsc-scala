@@ -7,19 +7,19 @@ import spsc._
 class AlgebraTests extends FunSuite {
 
   test(testName = "101 shellEq") {
-    assert(shellEq(Ctr("A", List()), Ctr("A", List())))
-    assert(shellEq(FCall("A", List()), FCall("A", List())))
-    assert(shellEq(GCall("A", List()), GCall("A", List())))
-    assert(!shellEq(Ctr("A", List()), Ctr("B", List())))
-    assert(!shellEq(Ctr("A", List()), FCall("A", List())))
-    assert(!shellEq(Ctr("A", List()), Ctr("A", List(Var("y")))))
+    assert(shellEq(Ctr("A", Nil), Ctr("A", Nil)))
+    assert(shellEq(FCall("A", Nil), FCall("A", Nil)))
+    assert(shellEq(GCall("A", Nil), GCall("A", Nil)))
+    assert(!shellEq(Ctr("A", Nil), Ctr("B", Nil)))
+    assert(!shellEq(Ctr("A", Nil), FCall("A", Nil)))
+    assert(!shellEq(Ctr("A", Nil), Ctr("A", List(Var("y")))))
   }
 
   test(testName = "201 applySubst") {
     val e1 = SLLParsers.parseTerm("E1")
     val e2 = SLLParsers.parseTerm("E2")
     val e = SLLParsers.parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
-    val subst = Map(Var("x1") -> e1, Var("x2") -> e2)
+    val subst = Map("x1" -> e1, "x2" -> e2)
     assert(applySubst(subst, e).toString
       == "Cons(E1,Cons(E2,Cons(x3,Nil)))")
   }
@@ -27,20 +27,18 @@ class AlgebraTests extends FunSuite {
   test(testName = "302 vars") {
     val e = SLLParsers.parseTerm("A(x,B(y,z),a)")
     assert(vars(e)
-      == List(Var("x"), Var("y"), Var("z"), Var("a")))
+      == List("x", "y", "z", "a"))
 
     val e1 = SLLParsers.parseTerm("A(x,B(y,x),a)")
     assert(vars(e1)
-      == List(Var("x"), Var("y"), Var("a")))
+      == List("x", "y", "a"))
   }
 
-  def substToString(subst: Map[Var, Term]): String = {
+  def substToString(subst: Map[String, Term]): String = {
     if (subst == null)
       null
     else {
-      var acc = ""
-      for ((v, e) <- subst)
-        acc += v.toString() + "->" + e.toString + ";"
+      val acc = for((n, e) <- subst) yield f"$n->${e.toString};"
       acc.mkString("")
     }
   }

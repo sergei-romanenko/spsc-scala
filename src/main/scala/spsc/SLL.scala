@@ -34,14 +34,14 @@ object Ctr extends CFGObject(TKind.Ctr)
 object FCall extends CFGObject(TKind.FCall)
 object GCall extends CFGObject(TKind.GCall)
 
-case class Let(term: Term, bindings: List[(Var, Term)]) extends Term {
+case class Let(term: Term, bindings: List[(String, Term)]) extends Term {
   val bindings_s: List[String] =
     bindings map {case (v, e) => v.toString() + "=" + e.toString}
   override def toString: String =
     "let " + bindings_s.mkString(",") + " in " + term.toString
 }
 
-case class Pat(name: String, params: List[Var]) {
+case class Pat(name: String, params: List[String]) {
   override def toString: String =
     if (params.isEmpty)
       name
@@ -51,13 +51,13 @@ case class Pat(name: String, params: List[Var]) {
 
 abstract class Rule {def name: String}
 
-case class FRule(name: String, params: List[Var], term: Term) extends Rule {
+case class FRule(name: String, params: List[String], term: Term) extends Rule {
   override def toString: String =
     name + params.mkString("(",",",")") + "=" + term + ";"
 }
 
-case class GRule(name: String, pat: Pat, params: List[Var], term: Term) extends Rule {
-  val allParams: List[Var] = pat.params ++ params
+case class GRule(name: String, pat: Pat, params: List[String], term: Term) extends Rule {
+  val allParams: List[String] = pat.params ++ params
   override def toString: String =
     name + (pat :: params).mkString("(",",",")")  + "=" + term + ";"
 }

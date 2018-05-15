@@ -22,8 +22,8 @@ class SLLCheck(val task: Task) {
   val fNames: List[String] = fRules.map(_.name)
   val gNames: List[String] = gRules.map(_.name)
   val hNames: List[String] = fNames union gNames
-  val fParams: List[String] = fRules.flatMap(_.params.map(_.name))
-  val gParams: List[String] = gRules.flatMap(_.allParams.map(_.name))
+  val fParams: List[String] = fRules.flatMap(_.params)
+  val gParams: List[String] = gRules.flatMap(_.allParams)
   val pNames: List[String] = vTerm(task.term) union (fParams union gParams)
 
   // Disjointness of name sets.
@@ -55,12 +55,12 @@ class SLLCheck(val task: Task) {
   }
 
   def rnFRule(fRule: FRule): Option[String] = {
-    for (n <- repeatedName(fRule.params.map(_.name)))
+    for (n <- repeatedName(fRule.params))
       yield f"$n is repeated in the parameters of ${fRule.name}"
   }
 
   def rnGRule(gRule: GRule): Option[String] = {
-    for (n <- repeatedName(gRule.allParams.map(_.name)))
+    for (n <- repeatedName(gRule.allParams))
       yield f"$n is repeated in the parameters of ${gRule.name}"
   }
 
@@ -73,14 +73,14 @@ class SLLCheck(val task: Task) {
   // A variable must be a parameter.
 
   def pvFRule(fRule: FRule): Option[String] = {
-    var ps = fRule.params.map(_.name)
+    var ps = fRule.params
     var vs = vTerm(fRule.term)
     for (v <- vs.find(!ps.contains(_))) yield
       f"In the definition of ${fRule.name}, $v is not a parameter"
   }
 
   def pvGRule(gRule: GRule): Option[String] = {
-    var ps = gRule.allParams.map(_.name)
+    var ps = gRule.allParams
     var vs = vTerm(gRule.term)
     for (v <- vs.find(!ps.contains(_))) yield
       f"In the definition of ${gRule.name}, $v is not a parameter"

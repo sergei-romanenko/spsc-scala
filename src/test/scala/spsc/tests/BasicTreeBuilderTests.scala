@@ -48,9 +48,9 @@ class BasicTreeBuilderTests extends FunSuite {
   }
 
   test(testName = "106 Let") {
-    drStep0(prog = Program(List()),
+    drStep0(prog = Program(Nil),
       term = Let(Ctr("C", List(Var("x"), Var("y"))),
-        List((Var("x"), Var("a")), (Var("y"), Var("b")))),
+        List(("x", Var("a")), ("y", Var("b")))),
       expected = "(C(x,y),*)+(a,*)+(b,*)")
   }
 

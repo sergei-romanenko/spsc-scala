@@ -7,8 +7,8 @@ object Algebra {
     e1.name == e2.name &&
     e1.args.length == e2.args.length
   
-  def applySubst(m: Map[Var, Term], term: Term): Term = term match {
-    case v: Var => m.getOrElse(v, v)
+  def applySubst(m: Map[String, Term], term: Term): Term = term match {
+    case v: Var => m.getOrElse(v.name, v)
     case t: CFG => t.replaceArgs(t.args.map(applySubst(m, _)))
   }
   
@@ -16,34 +16,35 @@ object Algebra {
   
   def instOf(t1: Term, t2: Term): Boolean = matchAgainst(t2, t1) != null
   
-  def matchAgainst(t1: Term, t2: Term): Map[Var, Term] = {
-    var map = Map[Var, Term]()
+  def matchAgainst(t1: Term, t2: Term): Map[String, Term] = {
+    var m = Map[String, Term]()
     def walk(t1: Term, t2: Term): Boolean = (t1, t2) match {
-      case (v1: Var, _) => map.get(v1) match {
-        case None => map += (v1 -> t2); true 
+      case (v1: Var, _) => m.get(v1.name) match {
+        case None => m += (v1.name -> t2); true
         case Some(t3) => t2 == t3
       }
       case (e1: CFG, e2:CFG) if shellEq(e1, e2) => 
         (e1.args, e2.args).zipped.forall(walk)
       case _ => false
     }
-    if (walk(t1, t2)) map else null
+    if (walk(t1, t2)) m else null
   }
   
-  def vars: Term => List[Var] = {
-    case v: Var => List(v)
-    case t: CFG => (List[Var]() /: t.args) {(vs, exp) =>  (vs ++ vars(exp)).distinct}
+  def vars: Term => List[String] = {
+    case v: Var => List(v.name)
+    case t: CFG =>
+      (List[String]() /: t.args) {(ns, term) =>  (ns ++ vars(term)).distinct}
   }
   
   private var i = 0
 
   def resetVarGen(): Unit = { i = 0 }
   
-  def freshVar(x: AnyRef = null): Var = {
+  def freshVarName() : String = {
     i += 1
-    Var("v" + i)
+    "v" + i
   }
-  
+
   def isFGCall: Term => Boolean = {
     case FCall(_, _) => true
     case GCall(_, _) => true

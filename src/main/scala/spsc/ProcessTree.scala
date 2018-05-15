@@ -2,9 +2,9 @@ package spsc
 
 import Algebra._
 
-case class Contraction(v: Var, pat: Pat) {
+case class Contraction(n: String, pat: Pat) {
   override def toString: String =
-    v.toString + "=" + pat.toString
+    f"$n=${pat.toString}"
 }
 
 class Node(val nodeId: Int,

@@ -31,15 +31,16 @@ class ResProgGen(val tree: Tree) {
     }
 
   def walkCall(n: Node, name: String, args: List[Term]): Term = {
-    val vs = vars(n.term)
+    val ns = vars(n.term)
+    val vs = ns.map(Var)
     if (tree.children(n).head.contr != null) {
       val (gname, _) = sigs.getOrElseUpdate(n, (rename(name), vs))
       for (cn <- tree.children(n)) 
-        defs += GRule(gname, cn.contr.pat, vs.tail, walk(cn))
+        defs += GRule(gname, cn.contr.pat, ns.tail, walk(cn))
       GCall(gname, vs)
     } else if (tree.leaves.exists(_.funcAncestor == n)) {
       val (fname, fargs) = sigs.getOrElseUpdate(n, (rename(name), vs))
-      defs += FRule(fname, fargs, walk(tree.children(n).head))
+      defs += FRule(fname, fargs.map(_.name), walk(tree.children(n).head))
       FCall(fname, vs)
     } else walk(tree.children(n).head)
   }

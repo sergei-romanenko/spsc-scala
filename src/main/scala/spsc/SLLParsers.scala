@@ -31,8 +31,8 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   def vrb: SLLParsers.Parser[Var] =
     lid ^^ Var
 
-  def patParams: SLLParsers.Parser[List[Var]] =
-    opt("(" ~> repsep(vrb, ",") <~ ")") ^^ {
+  def patParams: SLLParsers.Parser[List[String]] =
+    opt("(" ~> repsep(lid, ",") <~ ")") ^^ {
       _.getOrElse(Nil)
     }
 
@@ -40,10 +40,10 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
     uid ~ patParams ^^ Pat
 
   def fRule: SLLParsers.Parser[FRule] =
-    lid ~ ("(" ~> repsep(vrb, ",") <~ ")") ~ ("=" ~> term <~ ";") ^^ FRule
+    lid ~ ("(" ~> repsep(lid, ",") <~ ")") ~ ("=" ~> term <~ ";") ^^ FRule
 
   def gRule: SLLParsers.Parser[GRule] =
-    lid ~ ("(" ~> pat) ~ (rep("," ~> vrb) <~ ")") ~ ("=" ~> term <~ ";") ^^ GRule
+    lid ~ ("(" ~> pat) ~ (rep("," ~> lid) <~ ")") ~ ("=" ~> term <~ ";") ^^ GRule
 
   def ctrArgs: SLLParsers.Parser[List[Term]] =
     opt("(" ~> repsep(term, ",") <~ ")") ^^ {
