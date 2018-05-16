@@ -24,16 +24,16 @@ object PrettyPrinter {
 
   def docNode(tree: Tree, node: Node): Doc = {
     docContr(node.contr) +
-      (if (node.parent == null) Doc.empty else Doc.line) +
+      (if (node.parent.isEmpty) Doc.empty else Doc.line) +
       Doc.str(node.nodeId) + Doc.text(str = " : ") + Doc.str(node.term) +
       docBack(tree, node) +
       docChildren(tree, node).nested(amount = 4)
   }
 
   def docBack(tree: Tree, node: Node): Doc = {
-    val fn = node.funcAncestor
-    if (fn == null) Doc.empty else {
-      Doc.line + Doc.text(str = "--> ") + Doc.str(fn.nodeId)
+    val fa = node.funcAncestor
+    if (fa.isEmpty) Doc.empty else {
+      Doc.line + Doc.text(str = "--> ") + Doc.str(fa.get.nodeId)
     }
   }
 

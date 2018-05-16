@@ -34,23 +34,19 @@ class AlgebraTests extends FunSuite {
       == List("x", "y", "a"))
   }
 
-  def substToString(subst: Map[String, Term]): String = {
-    if (subst == null)
-      null
-    else {
-      val acc = for((n, e) <- subst) yield f"$n->${e.toString};"
-      acc.mkString("")
+  def substToString(os: Option[Map[String, Term]]): Option[String] =
+    for (subst <- os) yield {
+      (for ((n, t) <- subst) yield f"$n->${t.toString};").mkString("")
     }
-  }
 
   def matchOK(pat: String, term: String, expected: String): Unit = {
     val subst = matchAgainst(SLLParsers.parseTerm(pat), SLLParsers.parseTerm(term))
-    assert(substToString(subst) == expected)
+    assert(substToString(subst).contains(expected))
   }
 
   def matchNo(pat: String, term: String): Unit = {
     val subst = matchAgainst(SLLParsers.parseTerm(pat), SLLParsers.parseTerm(term))
-    assert(substToString(subst) == null)
+    assert(substToString(subst).isEmpty)
   }
 
   test(testName = "401 matchAgainst") {

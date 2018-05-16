@@ -50,7 +50,7 @@ class BasicTreeBuilder(prog: Program) extends TreeBuilder {
       case None =>
         t.addChildren(b, driveTerm(b.term))
       case Some(a) =>
-        t.decompose(b, a.term, matchAgainst(a.term, b.term).toList)
+        t.decompose(b, a.term, matchAgainst(a.term, b.term).get.toList)
     }
 
   @tailrec

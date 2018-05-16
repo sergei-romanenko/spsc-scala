@@ -8,20 +8,22 @@ case class Contraction(n: String, pat: Pat) {
 }
 
 case class Node(nodeId: Int, term: Term,
-                parent: Node, contr: Option[Contraction]) {
+                parent: Option[Node], contr: Option[Contraction]) {
 
-  def ancestors: List[Node] =
-    if (parent == null) Nil else parent :: parent.ancestors
+  def ancestors: List[Node] = parent match {
+    case None => Nil
+    case Some(q) => q :: q.ancestors
+  }
 
   def isProcessed: Boolean = term match {
     case Ctr(_, Nil) => true
     case v: Var => true
     case Let(_, _) => true
-    case _ => funcAncestor != null
+    case _ => funcAncestor.isDefined
   }
 
-  def funcAncestor: Node =
-    ancestors.find { n => isFGCall(n.term) && equiv(term, n.term) }.orNull
+  def funcAncestor: Option[Node] =
+    ancestors.find { n => isFGCall(n.term) && equiv(term, n.term) }
 }
 
 case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
@@ -30,18 +32,18 @@ case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
     var i = freeId - 1
     Tree(freeId + cs.length, root,
       children +
-        (n -> (cs map { case (t, b) => i += 1; Node(i, t, n, b) })))
+        (n -> (cs map { case (t, b) => i += 1; Node(i, t, Some(n), b) })))
   }
 
   def replace(n: Node, term: Term): (Tree, Node) =
     if (n == root) {
-      val n1 = Node(n.nodeId, term, parent = null, contr = None)
+      val n1 = Node(n.nodeId, term, parent = None, contr = None)
       (Tree(freeId, n1, Map().withDefaultValue(Nil)), n1)
     } else {
-      val p = n.parent
-      val n1 = Node(freeId, term, p, n.contr)
-      val cs = children(p) map { m => if (m == n) n1 else m }
-      (Tree(freeId + 1, root, children + (p -> cs)), n1)
+      val q = n.parent.get
+      val n1 = Node(freeId, term, n.parent, n.contr)
+      val cs = children(q) map { m => if (m == n) n1 else m }
+      (Tree(freeId + 1, root, children + (q -> cs)), n1)
     }
 
   // This function replaces the expression in a node with
@@ -64,7 +66,10 @@ case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
     val acc = new StringBuilder()
 
     def walk(n: Node): Unit = {
-      val parentId_s = if (n.parent == null) "" else n.parent.nodeId.toString
+      val parentId_s =
+        if (n.parent == null) "null"
+        else if (n.parent.isEmpty) ""
+        else n.parent.get.nodeId.toString
       val children_s =
         (for (child <- children(n))
           yield child.nodeId.toString).mkString(",")
@@ -92,7 +97,7 @@ object Tree {
 
   def create(term: Term) =
     Tree(freeId = 1,
-      root = Node(nodeId = 0, term = term, parent = null, contr = None),
+      root = Node(nodeId = 0, term = term, parent = None, contr = None),
       children = Map().withDefaultValue(Nil))
 }
 
