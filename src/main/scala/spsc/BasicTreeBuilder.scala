@@ -1,38 +1,37 @@
 package spsc
 
 import scala.annotation.tailrec
-
 import Algebra._
+import Tree._
 
 class BasicTreeBuilder(prog: Program) extends TreeBuilder {
 
   def freshPat(p: Pat) = Pat(p.name, p.params.map(_ => freshVarName()))
 
-  def applyContr(c: Contraction)(term: Term): Term = {
-    if (c == null)
+  def applyContr(oc: Option[Contraction])(term: Term): Term = oc match {
+    case None =>
       term
-    else {
+    case Some(c) =>
       val cargs = c.pat.params.map(Var)
       val subst = Map(c.n -> Ctr(c.pat.name, cargs))
       applySubst(subst, term)
-    }
   }
 
-  def driveTerm(term: Term) : List[(Term, Contraction)] = term match {
+  def driveTerm(term: Term) : List[Branch] = term match {
     case Ctr(name, args) =>
-      args.map((_, null))
+      args.map((_, None))
     case FCall(name, args) =>
       val f = prog.f(name)
       val subst = Map(f.params.zip(args): _*)
-      List((applySubst(subst, f.term), null))
+      List((applySubst(subst, f.term), None))
     case GCall(name, Ctr(cname, cargs) :: args) =>
       val g = prog.g(name, cname)
       val subst = Map(g.allParams.zip(cargs ::: args): _*)
-      List((applySubst(subst, g.term), null))
+      List((applySubst(subst, g.term), None))
     case GCall(name, (v: Var) :: args) =>
       for(g <- prog.gs(name)) yield {
         val p = freshPat(g.pat)
-        val c = Contraction(v.name, p)
+        val c = Some(Contraction(v.name, p))
         val cargs = p.params.map(Var)
         val args1 = args.map(applyContr(c))
         val subst = Map(g.allParams.zip(cargs ::: args1): _*)

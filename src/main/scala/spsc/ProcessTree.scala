@@ -1,13 +1,14 @@
 package spsc
 
 import Algebra._
+import spsc.Tree.Branch
 
 case class Contraction(n: String, pat: Pat) {
-  override def toString: String =
-    f"$n=${pat.toString}"
+  override def toString: String = f"$n=${pat.toString}"
 }
 
-case class Node(nodeId: Int, term: Term, parent: Node, contr: Contraction) {
+case class Node(nodeId: Int, term: Term,
+                parent: Node, contr: Option[Contraction]) {
 
   def ancestors: List[Node] =
     if (parent == null) Nil else parent :: parent.ancestors
@@ -15,7 +16,7 @@ case class Node(nodeId: Int, term: Term, parent: Node, contr: Contraction) {
   def isProcessed: Boolean = term match {
     case Ctr(_, Nil) => true
     case v: Var => true
-    case Let(_,_) => true
+    case Let(_, _) => true
     case _ => funcAncestor != null
   }
 
@@ -25,7 +26,7 @@ case class Node(nodeId: Int, term: Term, parent: Node, contr: Contraction) {
 
 case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
 
-  def addChildren(n: Node, cs: List[(Term, Contraction)]): Tree = {
+  def addChildren(n: Node, cs: List[Branch]): Tree = {
     var i = freeId - 1
     Tree(freeId + cs.length, root,
       children +
@@ -34,7 +35,7 @@ case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
 
   def replace(n: Node, term: Term): (Tree, Node) =
     if (n == root) {
-      val n1 = Node(n.nodeId, term, parent = null, contr = null)
+      val n1 = Node(n.nodeId, term, parent = null, contr = None)
       (Tree(freeId, n1, Map().withDefaultValue(Nil)), n1)
     } else {
       val p = n.parent
@@ -49,7 +50,7 @@ case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
 
   def decompose(n: Node, term: Term, bs: List[(String, Term)]): Tree = {
     val (tree1, n1) = replace(n, Let(term, bs))
-    val cs = (term, null) :: bs.map({ case (_, t) => (t, null) })
+    val cs = (term, None) :: bs.map({ case (_, t) => (t, None) })
     tree1.addChildren(n1, cs)
   }
 
@@ -67,7 +68,10 @@ case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
       val children_s =
         (for (child <- children(n))
           yield child.nodeId.toString).mkString(",")
-      val contr_s = if (n.contr == null) "" else n.contr.toString
+      val contr_s =
+        if (n.contr == null) "null"
+        else if (n.contr.isEmpty) ""
+        else n.contr.get.toString
       val node_s = n.nodeId.toString + ":(" + n.term + "," + contr_s +
         "," + parentId_s + ",[" + children_s + "])"
       if (acc.nonEmpty) acc.append(",")
@@ -84,9 +88,11 @@ case class Tree(freeId: Int, root: Node, children: Map[Node, List[Node]]) {
 
 object Tree {
 
+  type Branch = (Term, Option[Contraction])
+
   def create(term: Term) =
     Tree(freeId = 1,
-      root = Node(nodeId = 0, term = term, parent = null, contr = null),
+      root = Node(nodeId = 0, term = term, parent = null, contr = None),
       children = Map().withDefaultValue(Nil))
 }
 

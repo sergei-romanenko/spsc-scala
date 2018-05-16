@@ -23,7 +23,7 @@ class ResProgGen(val tree: Tree) {
       case GCall(name, args) => walkCall(n, name, args)
     } else sigs(n.funcAncestor) match {
       case (name, args) =>
-        if (tree.children(n.funcAncestor).head.contr == null)
+        if (tree.children(n.funcAncestor).head.contr.isEmpty)
              applySubst(matchAgainst(n.funcAncestor.term, n.term),
                         FCall(name, args))
         else applySubst(matchAgainst(n.funcAncestor.term, n.term),
@@ -33,10 +33,10 @@ class ResProgGen(val tree: Tree) {
   def walkCall(n: Node, name: String, args: List[Term]): Term = {
     val ns = vars(n.term)
     val vs = ns.map(Var)
-    if (tree.children(n).head.contr != null) {
+    if (tree.children(n).head.contr.isDefined) {
       val (gname, _) = sigs.getOrElseUpdate(n, (rename(name), vs))
       for (cn <- tree.children(n)) 
-        defs += GRule(gname, cn.contr.pat, ns.tail, walk(cn))
+        defs += GRule(gname, cn.contr.get.pat, ns.tail, walk(cn))
       GCall(gname, vs)
     } else if (tree.leaves.exists(_.funcAncestor == n)) {
       val (fname, fargs) = sigs.getOrElseUpdate(n, (rename(name), vs))

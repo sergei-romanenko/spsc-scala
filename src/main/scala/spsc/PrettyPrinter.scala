@@ -37,14 +37,14 @@ object PrettyPrinter {
     }
   }
 
-  def docContr(contr: Contraction): Doc =
-    if (contr == null)
+  def docContr(oc: Option[Contraction]): Doc = oc match {
+    case None =>
       Doc.empty
-    else {
+    case Some(c) =>
       Doc.line + Doc.text(str = "{") +
-        Doc.text(contr.n) + Doc.text(str = " = ") + Doc.str(contr.pat) +
+        Doc.text(c.n) + Doc.text(str = " = ") + Doc.str(c.pat) +
         Doc.text(str = "}")
-    }
+  }
 
   def docChildren(tree: Tree, node: Node): Doc = {
     val ns = tree.children(node)

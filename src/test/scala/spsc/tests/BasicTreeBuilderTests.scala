@@ -17,9 +17,9 @@ class BasicTreeBuilderTests extends FunSuite {
     resetVarGen()
     val builder = new BasicTreeBuilder(prog)
     val branches = builder.driveTerm(term)
-    val branches_s = (branches map { case (exp, contr) =>
+    val branches_s = (branches map { case (exp, oc) =>
       "(" + exp.toString + "," +
-        (if (contr == null) "*" else contr.toString) + ")"
+        (if (oc.isEmpty) "*" else oc.get.toString) + ")"
     }).mkString("+")
     assert(branches_s == expected)
   }
