@@ -12,8 +12,6 @@ object TKind extends Enumeration {
 
 case class CFG(kind: TKind.Value, name: String, args: List[Term]) extends Term {
 
-  def replaceArgs(newArgs: List[Term]) = CFG(kind, name, newArgs)
-
   override def toString: String =
     if (kind == TKind.Ctr && args.isEmpty)
       name
@@ -38,8 +36,8 @@ object GCall extends CFGObject(TKind.GCall)
 
 case class Let(term: Term, bindings: List[(String, Term)]) extends Term {
   override def toString: String = {
-    val nts = bindings map { case (n, t) => f"$n=${t.toString}" }
-    f"let ${nts.mkString(",")} in ${term.toString}"
+    val nts = bindings map { case (n, t) => s"$n=$t" }
+    s"let ${nts.mkString(",")} in $term"
   }
 }
 
@@ -57,14 +55,14 @@ abstract class Rule {
 
 case class FRule(name: String, params: List[String], term: Term) extends Rule {
   override def toString: String =
-    f"$name${params.mkString("(", ",", ")")}=$term;"
+    s"$name${params.mkString("(", ",", ")")}=$term;"
 }
 
 case class GRule(name: String, pat: Pat, params: List[String], term: Term) extends Rule {
   val allParams: List[String] = pat.params ::: params
 
   override def toString: String =
-    f"$name${(pat :: params).mkString("(", ",", ")")}=$term;"
+    s"$name${(pat :: params).mkString("(", ",", ")")}=$term;"
 }
 
 case class Program(rules: List[Rule]) {
@@ -88,5 +86,5 @@ case class Program(rules: List[Rule]) {
 }
 
 case class Task(term: Term, prog: Program) {
-  override def toString: String = f"${term.toString} where ${prog.toString}"
+  override def toString: String = s"$term where $prog"
 }

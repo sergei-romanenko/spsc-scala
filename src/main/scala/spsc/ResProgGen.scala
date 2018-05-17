@@ -19,7 +19,7 @@ class ResProgGen(val tree: Tree) {
         var body = walk(tree.getNode(n.children.head))
         val ks = bs map { case (k, _) => k }
         val ts = n.children.tail.map(tree(_)).map(walk)
-        applySubst(Map(ks zip ts: _*), body)
+        applySubst(Map(ks zip ts: _*))(body)
       case Ctr(name, _) => Ctr(name, n.children.map(tree(_)).map(walk))
       case FCall(name, args) => walkCall(n, name, args)
       case GCall(name, args) => walkCall(n, name, args)
@@ -27,9 +27,9 @@ class ResProgGen(val tree: Tree) {
       val q = fa.get
       val (name, args) = sigs(q)
       if (tree(q.children.head).contr.isEmpty)
-        applySubst(matchAgainst(q.term, n.term).get, FCall(name, args))
+        applySubst(matchAgainst(q.term, n.term).get)(FCall(name, args))
       else
-        applySubst(matchAgainst(q.term, n.term).get, GCall(name, args))
+        applySubst(matchAgainst(q.term, n.term).get)(GCall(name, args))
     }
   }
 

@@ -6,16 +6,26 @@ import spsc.Tree._
 import scala.collection.immutable.TreeMap
 
 case class Contraction(n: String, pat: Pat) {
-  override def toString: String = f"$n=${pat.toString}"
+  override def toString: String = s"$n=$pat"
 }
 
 case class Node(nodeId: NodeId, term: Term, contr: Option[Contraction],
                 parent: Option[NodeId], children: List[NodeId],
-                back: Option[NodeId]) {}
+                back: Option[NodeId]) {
+
+  override def toString: String = {
+    val contr_s = if (contr.isEmpty) "" else contr.get.toString
+    val parentId_s = if (parent.isEmpty) "" else parent.get.toString
+    val children_s = (for (chId <- children) yield chId.toString).mkString(",")
+    val back_s = if (back.isEmpty) "" else s",${back.get.toString}"
+    s"$nodeId:($term,$contr_s,$parentId_s,[$children_s]$back_s)"
+  }
+}
 
 case class Tree(freeId: NodeId, getNode: NodeMap) {
 
-  def get(nodeId: NodeId): Option[Node] = getNode.get(nodeId)
+  override def toString: String =
+    getNode.values.map(_.toString).mkString("{", ",", "}")
 
   def apply(nodeId: NodeId): Node = getNode(nodeId)
 
@@ -83,14 +93,14 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
         globalAncestors(p)
   }
 
-  def findAMoreGeneralAncestor(b: Node) : Option[Node] =
-    if(aVarIsUnderAttack (b.term))
+  def findAMoreGeneralAncestor(b: Node): Option[Node] =
+    if (aVarIsUnderAttack(b.term))
       globalAncestors(b).find(isMoreGeneral(b))
     else
       localAncestors(b).find(isMoreGeneral(b))
 
-  def findAnEmbeddedAncestor(b: Node) : Option[Node] =
-    if(aVarIsUnderAttack (b.term))
+  def findAnEmbeddedAncestor(b: Node): Option[Node] =
+    if (aVarIsUnderAttack(b.term))
       globalAncestors(b).find(isEmbeddedAncestor(b))
     else
       localAncestors(b).find(isEmbeddedAncestor(b))
@@ -112,16 +122,16 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
     (tree1, n1)
   }
 
-  def addChildren(n: Node, cs : List[Branch]) : Tree = {
+  def addChildren(n: Node, cs: List[Branch]): Tree = {
     val freeId1 = freeId + cs.length
     val chIds = freeId until freeId1
-    val n1 = n.copy(children = n.children ++ chIds )
+    val n1 = n.copy(children = n.children ++ chIds)
     val chNodes =
-      for((nId1, (t1, c1)) <- chIds.zip(cs)) yield {
+      for ((nId1, (t1, c1)) <- chIds.zip(cs)) yield {
         (nId1, Node(nId1, t1, c1, Some(n.nodeId), Nil, None))
-    }
+      }
     val getNode1 = getNode + (n1.nodeId -> n1) ++ chNodes
-    this.copy(freeId=freeId1, getNode=getNode1)
+    this.copy(freeId = freeId1, getNode = getNode1)
   }
 
   // This function replaces the expression in a node with
@@ -132,34 +142,6 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
     val (tree1, n1) = replaceSubtree(n, Let(term, bs))
     val cs = (term, None) :: bs.map({ case (_, t) => (t, None) })
     tree1.addChildren(n1, cs)
-  }
-
-  override def toString: String = {
-    val acc = new StringBuilder()
-
-    def walk(n: Node): Unit = {
-      val parentId_s =
-        if (n.parent == null) "null"
-        else if (n.parent.isEmpty) ""
-        else n.parent.get.toString
-      val children_s =
-        (for (chId <- n.children)
-          yield chId.toString).mkString(",")
-      val contr_s =
-        if (n.contr == null) "null"
-        else if (n.contr.isEmpty) ""
-        else n.contr.get.toString
-      val node_s = n.nodeId.toString + ":(" + n.term + "," + contr_s +
-        "," + parentId_s + ",[" + children_s + "])"
-      if (acc.nonEmpty) acc.append(",")
-      acc.append(node_s)
-      for (chId <- n.children) walk(getNode(chId))
-    }
-
-    acc.append("{")
-    walk(getNode(0))
-    acc.append("}")
-    acc.toString
   }
 
 }

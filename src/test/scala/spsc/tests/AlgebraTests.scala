@@ -20,7 +20,7 @@ class AlgebraTests extends FunSuite {
     val e2 = SLLParsers.parseTerm("E2")
     val e = SLLParsers.parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
     val subst = Map("x1" -> e1, "x2" -> e2)
-    assert(applySubst(subst, e).toString
+    assert(applySubst(subst)(e).toString
       == "Cons(E1,Cons(E2,Cons(x3,Nil)))")
   }
 
@@ -36,7 +36,7 @@ class AlgebraTests extends FunSuite {
 
   def substToString(os: Option[Subst]): Option[String] =
     for (subst <- os) yield {
-      (for ((n, t) <- subst) yield f"$n->${t.toString};").mkString("")
+      (for ((n, t) <- subst) yield s"$n->$t;").mkString("")
     }
 
   def matchOK(pat: String, term: String, expected: String): Unit = {

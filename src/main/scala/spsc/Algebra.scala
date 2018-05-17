@@ -9,9 +9,9 @@ object Algebra {
       t1.name == t2.name &&
       t1.args.length == t2.args.length
 
-  def applySubst(m: Subst, term: Term): Term = term match {
+  def applySubst(m: Subst)(term: Term): Term = term match {
     case v: Var => m.getOrElse(v.name, v)
-    case t: CFG => t.replaceArgs(t.args.map(applySubst(m, _)))
+    case t: CFG => t.copy(args = t.args.map(applySubst(m)))
   }
 
   def vars: Term => List[String] = {

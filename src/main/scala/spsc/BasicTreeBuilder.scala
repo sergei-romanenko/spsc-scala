@@ -14,7 +14,7 @@ class BasicTreeBuilder(prog: Program) {
     case Some(c) =>
       val cargs = c.pat.params.map(Var)
       val subst = Map(c.n -> Ctr(c.pat.name, cargs))
-      applySubst(subst, term)
+      applySubst(subst)(term)
   }
 
   def driveTerm(term: Term): List[Branch] = term match {
@@ -23,11 +23,11 @@ class BasicTreeBuilder(prog: Program) {
     case FCall(name, args) =>
       val f = prog.f(name)
       val subst = Map(f.params.zip(args): _*)
-      List((applySubst(subst, f.term), None))
+      List((applySubst(subst)(f.term), None))
     case GCall(name, Ctr(cname, cargs) :: args) =>
       val g = prog.g(name, cname)
       val subst = Map(g.allParams.zip(cargs ::: args): _*)
-      List((applySubst(subst, g.term), None))
+      List((applySubst(subst)(g.term), None))
     case GCall(name, (v: Var) :: args) =>
       for (g <- prog.gs(name)) yield {
         val p = freshPat(g.pat)
@@ -35,7 +35,7 @@ class BasicTreeBuilder(prog: Program) {
         val cargs = p.params.map(Var)
         val args1 = args.map(applyContr(c))
         val subst = Map(g.allParams.zip(cargs ::: args1): _*)
-        (applySubst(subst, g.term), c)
+        (applySubst(subst)(g.term), c)
       }
     case GCall(name, arg0 :: args) =>
       val bs = driveTerm(arg0)
