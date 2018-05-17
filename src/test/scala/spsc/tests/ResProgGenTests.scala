@@ -67,7 +67,7 @@ class ResProgGenTests extends FunSuite {
     )
 
     testAScp("gAdd(a, a)", pAdd,
-      "gAdd1(a,a) where gAdd1(Z,v7)=v7;gAdd1(S(v8),v7)=S(gAdd1(v8,v7));"
+      "gAdd1(a,a) where gAdd1(Z,v4)=v4;gAdd1(S(v5),v4)=S(gAdd1(v5,v4));"
     )
 
     testAScp("gAdd(gAdd(a,b),c)", pAdd,
@@ -77,7 +77,7 @@ class ResProgGenTests extends FunSuite {
       "gAddAcc1(a,b) where gAddAcc1(Z,b)=b;gAddAcc1(S(v1),b)=gAddAcc1(v1,S(b));")
 
     testAScp("gAddAcc(a, a)", pAddAcc,
-      "gAddAcc1(a,a) where gAddAcc1(Z,v7)=v7;gAddAcc1(S(v8),v7)=gAddAcc1(v8,S(v7));")
+      "gAddAcc1(a,a) where gAddAcc1(Z,v4)=v4;gAddAcc1(S(v5),v4)=gAddAcc1(v5,S(v4));")
 
     testAScp("gAddAcc(gAddAcc(a,b),c)", pAddAcc,
       "gAddAcc1(a,b,c) where gAddAcc1(Z,b,c)=gAddAcc2(b,c);gAddAcc1(S(v1),b,c)=gAddAcc1(v1,S(b),c);gAddAcc2(Z,c)=c;gAddAcc2(S(v2),c)=gAddAcc2(v2,S(c));")

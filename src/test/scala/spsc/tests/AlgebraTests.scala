@@ -34,7 +34,7 @@ class AlgebraTests extends FunSuite {
       == List("x", "y", "a"))
   }
 
-  def substToString(os: Option[Map[String, Term]]): Option[String] =
+  def substToString(os: Option[Subst]): Option[String] =
     for (subst <- os) yield {
       (for ((n, t) <- subst) yield f"$n->${t.toString};").mkString("")
     }

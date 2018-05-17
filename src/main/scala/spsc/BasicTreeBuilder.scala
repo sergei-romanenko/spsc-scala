@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 import Algebra._
 import Tree._
 
-class BasicTreeBuilder(prog: Program) extends TreeBuilder {
+class BasicTreeBuilder(prog: Program) {
 
   def freshPat(p: Pat) = Pat(p.name, p.params.map(_ => freshVarName()))
 
@@ -17,7 +17,7 @@ class BasicTreeBuilder(prog: Program) extends TreeBuilder {
       applySubst(subst, term)
   }
 
-  def driveTerm(term: Term) : List[Branch] = term match {
+  def driveTerm(term: Term): List[Branch] = term match {
     case Ctr(name, args) =>
       args.map((_, None))
     case FCall(name, args) =>
@@ -29,7 +29,7 @@ class BasicTreeBuilder(prog: Program) extends TreeBuilder {
       val subst = Map(g.allParams.zip(cargs ::: args): _*)
       List((applySubst(subst, g.term), None))
     case GCall(name, (v: Var) :: args) =>
-      for(g <- prog.gs(name)) yield {
+      for (g <- prog.gs(name)) yield {
         val p = freshPat(g.pat)
         val c = Some(Contraction(v.name, p))
         val cargs = p.params.map(Var)
@@ -45,17 +45,41 @@ class BasicTreeBuilder(prog: Program) extends TreeBuilder {
       sys.error("driveTerm")
   }
 
+  // -- The basic build step.
+
+  // This function applies a driving step to the node's expression,
+  // and, in general, adds children to the node.
+
+  def driveNode(t: Tree, n: Node): Tree = {
+    val branches = driveTerm(n.term)
+    t.addChildren(n, branches)
+  }
+
+  // If beta `instOf` alpha, we generalize beta by introducing
+  // a let-expression, in order to make beta the same as alpha
+  // (modulo variable names).
+
+  def generalizeNode(t: Tree, b: Node, a: Node): Tree = {
+    val bindings = matchAgainst(a.term, b.term).get.toList
+    t.decompose(b, a.term, bindings)
+  }
+
   def buildStep(t: Tree, b: Node): Tree =
-    b.ancestors.find(a => isFGCall(a.term) && instOf(b.term, a.term)) match {
-      case None =>
-        t.addChildren(b, driveTerm(b.term))
+    t.findFuncAncestor(b) match {
       case Some(a) =>
-        t.decompose(b, a.term, matchAgainst(a.term, b.term).get.toList)
+        t.setBack(b, a)
+      case None =>
+        t.findAMoreGeneralAncestor(b) match {
+          case Some(a) => generalizeNode(t, b, a)
+          case None => driveNode(t, b)
+        }
     }
+
+  // -- The main loop.
 
   @tailrec
   private def buildLoop(t: Tree): Tree = {
-    t.leaves.find(!_.isProcessed) match {
+    t.leaves.find(!t.isProcessed(_)) match {
       case None => t
       case Some(b) => buildLoop(buildStep(t, b))
     }

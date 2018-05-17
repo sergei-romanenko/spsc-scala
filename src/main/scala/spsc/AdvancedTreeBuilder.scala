@@ -4,33 +4,45 @@ import Algebra._
 
 class AdvancedTreeBuilder(prog: Program) extends BasicTreeBuilder(prog) {
 
-  def abs(t: Tree, a: Node, b: Node): Tree = {
-    val g: Gen = MSG.msg(a.term, b.term)
-    t.decompose(a, g.t, g.m1.toList)
+  def abstractNode(t: Tree, a: Node, term: Term,
+                   bs: List[(String, Term)]): Tree = {
+    t.decompose(a, term, bs)
   }
 
-  def split(t: Tree, n: Node): Tree = n.term match {
+  def splitNode(t: Tree, n: Node): Tree = n.term match {
     case term: CFG =>
       val ns = term.args.map(_ => freshVarName())
-      t.decompose(n, term.replaceArgs(ns.map(Var)), ns.zip(term.args))
+      val term1 = term.copy(args = ns.map(Var))
+      val bs = ns.zip(term.args)
+      t.decompose(n, term1, bs)
+  }
+
+  def generalizeAlphaOrSplit(t: Tree, b: Node, a: Node): Tree = {
+    val g: Gen = MSG.msg(a.term, b.term)
+    g.t match {
+      case _: Var =>
+        splitNode(t, b)
+      case _ =>
+        abstractNode(t, a, g.t, g.m1.toList)
+    }
   }
 
   override def buildStep(t: Tree, b: Node): Tree = {
-    if (!isFGCall(b.term)) {
-      t.addChildren(b, driveTerm(b.term))
-    } else {
-      b.ancestors.find(a => isFGCall(a.term) && HE.embeddedIn(a.term, b.term))
-      match {
-        case None =>
-          t.addChildren(b, driveTerm(b.term))
-        case Some(a) =>
-          if (instOf(b.term, a.term))
-            abs(t, b, a)
-          else if (equiv(MSG.msg(a.term, b.term).t, Var("z")))
-            split(t, b)
-          else
-            abs(t, a, b)
-      }
+    t.findFuncAncestor(b) match {
+      case Some(a) =>
+        t.setBack(b, a)
+      case None =>
+        t.findAMoreGeneralAncestor(b) match {
+          case Some(a) =>
+            generalizeNode(t, b, a)
+          case None =>
+            t.findAnEmbeddedAncestor(b) match {
+              case Some(a) =>
+                generalizeAlphaOrSplit(t, b, a)
+              case None =>
+                driveNode(t, b)
+            }
+        }
     }
   }
 

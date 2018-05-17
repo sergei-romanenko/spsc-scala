@@ -2,7 +2,7 @@ package spsc
 
 import Algebra._
 
-case class Gen(t: Term, m1: Map[String, Term], m2: Map[String, Term])
+case class Gen(t: Term, m1: Subst, m2: Subst)
 
 object MSG {
 
