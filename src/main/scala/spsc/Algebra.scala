@@ -34,8 +34,8 @@ object Algebra {
         case None => m += (v1.name -> t2); true
         case Some(t3) => t2 == t3
       }
-      case (e1: CFG, e2: CFG) if shellEq(e1, e2) =>
-        (e1.args, e2.args).zipped.forall(walk)
+      case (t1: CFG, t2: CFG) if shellEq(t1, t2) =>
+        (t1.args, t2.args).zipped.forall(walk)
       case _ => false
     }
 

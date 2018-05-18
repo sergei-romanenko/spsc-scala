@@ -1,29 +1,29 @@
 package spsc.tests
 
 import org.scalatest.FunSuite
-import org.scalatest.BeforeAndAfter
 import spsc._
 
-class ProcessTreeTests extends FunSuite with BeforeAndAfter {
+class ProcessTreeTests extends FunSuite {
 
-  var tree: Tree = _
-
-  before {
-    tree = Tree.create(Var("r"))
-    tree = tree.addChildren(tree(0),List((Var("m1"), None), (Var("m2"), None)))
-    val m1 = tree(tree(0).children.head)
-    val m2 = tree(tree(0).children.tail.head)
-    tree = tree.addChildren(m1, List((Var("n"), None)))
-    tree = tree.replaceSubtree(m2, Var("x"))._1
+  def testTree: Tree = {
+    val t0 = Tree.create(Var("r"))
+    val t1 = t0.addChildren(t0(0),List((Var("m1"), None), (Var("m2"), None)))
+    val m1 = t1(t1(0).children.head)
+    val m2 = t1(t1(0).children.tail.head)
+    val t2 = t1.addChildren(m1, List((Var("n"), None)))
+    val t3 = t2.replaceSubtree(m2, Var("x"))._1
+    t3
   }
 
   test(testName = "01 Tree.toString") {
-    assert(tree.toString
+    val t = testTree
+    assert(t.toString
       == "{0:(r,,,[1,2]),1:(m1,,0,[3]),2:(x,,0,[]),3:(n,,1,[])}")
   }
 
   test(testName = "02 Tree.leaves") {
-    assert(tree.leaves.map(_.nodeId).toList
-      == List(3, 2))
+    val t = testTree
+    assert(t.leaves.map(_.nodeId).toList
+      == List(2, 3))
   }
 }

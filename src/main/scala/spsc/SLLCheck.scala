@@ -28,11 +28,11 @@ class SLLCheck(val task: Task) {
 
   // Disjointness of name sets.
 
-  def ifgNames(): Option[String] =
+  def fgIntersection: Option[String] =
     for (f <- fNames.intersect(gNames).headOption) yield
       s"$f is both f- and g-function"
 
-  def ihpNames(): Option[String] =
+  def hpIntersection: Option[String] =
     for (f <- hNames.intersect(pNames).headOption) yield
       s"$f is both a function and a parameter"
 
@@ -64,27 +64,40 @@ class SLLCheck(val task: Task) {
       yield s"$n is repeated in the parameters of ${gRule.name}"
   }
 
+  def rnTask: Option[String] =
+    fRules.flatMap(rnFRule).headOption orElse
+      gRules.flatMap(rnGRule).headOption
+
+  // Repeated constructor names in g-rules.
+
   def rcGRules(name: String): Option[String] = {
     val cs = for (r <- gRules if name == r.name) yield r.pat.name
     for (c <- repeatedName(cs))
       yield s"In the definition of $name, $c appears twice in the patterns"
   }
 
+  def rcTask: Option[String] =
+    gNames.flatMap(rcGRules).headOption
+
   // A variable must be a parameter.
 
   def pvFRule(fRule: FRule): Option[String] = {
-    var ps = fRule.params
-    var vs = vTerm(fRule.term)
+    val ps = fRule.params
+    val vs = vTerm(fRule.term)
     for (v <- vs.find(!ps.contains(_))) yield
       s"In the definition of ${fRule.name}, $v is not a parameter"
   }
 
   def pvGRule(gRule: GRule): Option[String] = {
-    var ps = gRule.allParams
-    var vs = vTerm(gRule.term)
+    val ps = gRule.allParams
+    val vs = vTerm(gRule.term)
     for (v <- vs.find(!ps.contains(_))) yield
       s"In the definition of ${gRule.name}, $v is not a parameter"
   }
+
+  def pvTask: Option[String] =
+    fRules.flatMap(pvFRule).headOption orElse
+      gRules.flatMap(pvGRule).headOption
 
   // Collecting function names.
 
@@ -99,6 +112,8 @@ class SLLCheck(val task: Task) {
       val fs = args.flatMap(fTerm)
       if (kind == TKind.FCall) name :: fs else fs
   }
+
+  // Functions called in terms must be defined in the program.
 
   def dTerm(term: Term): Option[String] =
     fTerm(term).find(!fNames.contains(_))
@@ -117,26 +132,29 @@ class SLLCheck(val task: Task) {
     for (f <- dTerm(term)) yield
       s"In the initial term, there is a call to an undefined function $f"
 
-  def checkTask(): Option[String] =
-    ifgNames() orElse
-      (ihpNames() orElse
-        (fRules.flatMap(rnFRule).headOption orElse
-          (gRules.flatMap(rnGRule).headOption orElse
-            (gNames.flatMap(rcGRules).headOption orElse
-              (fRules.flatMap(pvFRule).headOption orElse
-                (gRules.flatMap(pvGRule).headOption orElse
-                  (fRules.flatMap(uFRule).headOption orElse
-                    (gRules.flatMap(uGRule).headOption orElse
-                      (uTerm(task.term) orElse
-                        (CArChecker().caTask(task.term, fRules, gRules) orElse
-                          HArChecker().haTask(task.term, fRules, gRules)))))))))))
+  def uTask: Option[String] =
+    fRules.flatMap(uFRule).headOption orElse
+      (gRules.flatMap(uGRule).headOption orElse
+        uTerm(task.term))
 
+  // The arities of constructors and functions must be consistent.
+
+  def arTask: Option[String] =
+    CArChecker().caTask(task.term, fRules, gRules) orElse
+      HArChecker().haTask(task.term, fRules, gRules)
+
+  // All checks.
+
+  def checkTask: Option[String] =
+    fgIntersection orElse (hpIntersection orElse
+      (rnTask orElse (rcTask orElse
+        (pvTask orElse (uTask orElse arTask)))))
 }
 
 object SLLCheck {
   def checkTask(task: Task): Option[String] = {
     val checker = new SLLCheck(task)
-    checker.checkTask()
+    checker.checkTask
   }
 }
 

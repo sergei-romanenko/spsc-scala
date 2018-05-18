@@ -7,6 +7,26 @@ import spsc._
 
 class BasicTreeBuilderTests extends FunSuite {
 
+  def varAttackTrue(t: String): Unit = {
+    val e = SLLParsers.parseTerm(t)
+    assert(Tree.aVarIsUnderAttack(e))
+  }
+
+  def varAttackFalse(s: String): Unit = {
+    val e = SLLParsers.parseTerm(s)
+    assert(!Tree.aVarIsUnderAttack(e))
+  }
+
+  test(testName = "aVarIsUnderAttack") {
+    varAttackTrue("x")
+    varAttackFalse("A()")
+    varAttackFalse("f(x)")
+    varAttackTrue("g(x,y)")
+    varAttackTrue("g1(g2(x))")
+    varAttackFalse("g(A())")
+    varAttackFalse("g(f(x))")
+  }
+
   val pAdd = "gAdd(Z,y)=y;gAdd(S(x),y)=S(gAdd(x,y));"
   val pAddAcc = "gAddAcc(Z,y)=y;gAddAcc(S(x),y)=gAddAcc(x,S(y));"
 

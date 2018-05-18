@@ -28,7 +28,7 @@ object Main extends App {
     val pathTree = taskName + ".tree"
     val pathRes = taskName + ".res"
 
-    var strTask: String = Source.fromFile(pathTask).mkString
+    val strTask: String = Source.fromFile(pathTask).mkString
     println("* Task read from " + pathTask)
     val task: Task = parseTask(strTask)
     checkTask(task) match {

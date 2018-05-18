@@ -9,33 +9,13 @@ class HeTests extends FunSuite {
   def heTrue(t1: String, t2: String): Unit = {
     val e1 = SLLParsers.parseTerm(t1)
     val e2 = SLLParsers.parseTerm(t2)
-    assert(he(e1, e2))
+    assert(embeddedIn(e1, e2))
   }
 
   def heFalse(t1: String, t2: String): Unit = {
     val e1 = SLLParsers.parseTerm(t1)
     val e2 = SLLParsers.parseTerm(t2)
-    assert(!he(e1, e2))
-  }
-
-  def varAttackTrue(t: String): Unit = {
-    val e = SLLParsers.parseTerm(t)
-    assert(aVarIsUnderAttack(e))
-  }
-
-  def varAttackFalse(s: String): Unit = {
-    val e = SLLParsers.parseTerm(s)
-    assert(!aVarIsUnderAttack(e))
-  }
-
-  test(testName = "101 aVarIsUnderAttack") {
-    varAttackTrue("x")
-    varAttackFalse("A()")
-    varAttackFalse("f(x)")
-    varAttackTrue("g(x,y)")
-    varAttackTrue("g1(g2(x))")
-    varAttackFalse("g(A())")
-    varAttackFalse("g(f(x))")
+    assert(!embeddedIn(e1, e2))
   }
 
   test(testName = "201 he") {

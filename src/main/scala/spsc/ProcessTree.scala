@@ -46,7 +46,8 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
     nodesAcc(getNode(0), Stream.empty)
 
   def leaves: Stream[Node] =
-    nodes.filter(_.children.isEmpty)
+  //nodes.filter(_.children.isEmpty)
+    getNode.values.filter(_.children.isEmpty).toStream
 
   def funcNodes: Stream[Node] = leaves.flatMap(_.back match {
     case None => Nil
@@ -105,20 +106,22 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
     else
       localAncestors(b).find(isEmbeddedAncestor(b))
 
-  // Rewriting the tree.
+  // -- Rewriting the tree.
 
-  def wipeSubtree(m: NodeMap, n: Node): NodeMap = {
-    val children = n.children.map(getNode)
-    (m /: children) (wipeSubtree)
+  // Fiding the ids of the subnodes (not including the node's id)/
+
+  def subnodeIds(n: Node): Set[NodeId] = {
+    val chIdSet = n.children.toSet
+    val subIdSets = n.children.map(getNode andThen subnodeIds)
+    (chIdSet /: subIdSets) (_.union(_))
   }
 
-  def deleteSubtree(n: Node): Tree = {
-    this.copy(getNode = wipeSubtree(getNode, n))
-  }
+  def removeSubnodes(m: NodeMap, n: Node): NodeMap =
+    (m /: subnodeIds(n)) (_ - _)
 
   def replaceSubtree(n: Node, term: Term): (Tree, Node) = {
     val n1 = n.copy(term = term, children = Nil)
-    val tree1 = this.copy(getNode = wipeSubtree(getNode, n) + (n1.nodeId -> n1))
+    val tree1 = this.copy(getNode = removeSubnodes(getNode, n) + (n1.nodeId -> n1))
     (tree1, n1)
   }
 
