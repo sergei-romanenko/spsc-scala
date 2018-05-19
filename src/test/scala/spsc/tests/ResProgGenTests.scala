@@ -6,7 +6,6 @@ import spsc._
 class ResProgGenTests extends FunSuite {
 
   def runBScp(t: String, p: String): String = {
-    Algebra.resetVarGen()
     val term = SLLParsers.parseTerm(t)
     val prog = SLLParsers.parseProg(p)
     val builder = new BasicTreeBuilder(prog)
@@ -16,7 +15,6 @@ class ResProgGenTests extends FunSuite {
   }
 
   def runAScp(t: String, p: String): String = {
-    Algebra.resetVarGen()
     val term = SLLParsers.parseTerm(t)
     val prog = SLLParsers.parseProg(p)
     val builder = new AdvancedTreeBuilder(prog)
@@ -46,14 +44,14 @@ class ResProgGenTests extends FunSuite {
     testBScp("Z", "", "Z where ")
 
     testBScp("gAdd(a, b)", pAdd,
-      "gAdd1(a,b) where gAdd1(Z,b)=b;gAdd1(S(v1),b)=S(gAdd1(v1,b));"
+      "gAdd1(a,b) where gAdd1(Z,b)=b;gAdd1(S(x1),b)=S(gAdd1(x1,b));"
     )
 
     testBScp("gAdd(gAdd(a,b),c)", pAdd,
-      "gAdd1(a,b,c) where gAdd1(Z,b,c)=gAdd2(b,c);gAdd1(S(v1),b,c)=S(gAdd1(v1,b,c));gAdd2(Z,c)=c;gAdd2(S(v2),c)=S(gAdd2(v2,c));")
+      "gAdd1(a,b,c) where gAdd1(Z,b,c)=gAdd2(b,c);gAdd1(S(x1),b,c)=S(gAdd1(x1,b,c));gAdd2(Z,c)=c;gAdd2(S(x2),c)=S(gAdd2(x2,c));")
 
     testBScp("gAddAcc(a, b)", pAddAcc,
-      "gAddAcc1(a,b) where gAddAcc1(Z,b)=b;gAddAcc1(S(v1),b)=gAddAcc1(v1,S(b));")
+      "gAddAcc1(a,b) where gAddAcc1(Z,b)=b;gAddAcc1(S(x1),b)=gAddAcc1(x1,S(b));")
   }
 
   // Advanced supercompiler
@@ -63,24 +61,24 @@ class ResProgGenTests extends FunSuite {
     testAScp("Z", "", "Z where ")
 
     testAScp("gAdd(a, b)", pAdd,
-      "gAdd1(a,b) where gAdd1(Z,b)=b;gAdd1(S(v1),b)=S(gAdd1(v1,b));"
+      "gAdd1(a,b) where gAdd1(Z,b)=b;gAdd1(S(x1),b)=S(gAdd1(x1,b));"
     )
 
     testAScp("gAdd(a, a)", pAdd,
-      "gAdd1(a,a) where gAdd1(Z,v4)=v4;gAdd1(S(v5),v4)=S(gAdd1(v5,v4));"
+      "gAdd1(a,a) where gAdd1(Z,v4)=v4;gAdd1(S(x5),v4)=S(gAdd1(x5,v4));"
     )
 
     testAScp("gAdd(gAdd(a,b),c)", pAdd,
-      "gAdd1(a,b,c) where gAdd1(Z,b,c)=gAdd2(b,c);gAdd1(S(v1),b,c)=S(gAdd1(v1,b,c));gAdd2(Z,c)=c;gAdd2(S(v2),c)=S(gAdd2(v2,c));")
+      "gAdd1(a,b,c) where gAdd1(Z,b,c)=gAdd2(b,c);gAdd1(S(x1),b,c)=S(gAdd1(x1,b,c));gAdd2(Z,c)=c;gAdd2(S(x2),c)=S(gAdd2(x2,c));")
 
     testAScp("gAddAcc(a, b)", pAddAcc,
-      "gAddAcc1(a,b) where gAddAcc1(Z,b)=b;gAddAcc1(S(v1),b)=gAddAcc1(v1,S(b));")
+      "gAddAcc1(a,b) where gAddAcc1(Z,b)=b;gAddAcc1(S(x1),b)=gAddAcc1(x1,S(b));")
 
     testAScp("gAddAcc(a, a)", pAddAcc,
-      "gAddAcc1(a,a) where gAddAcc1(Z,v4)=v4;gAddAcc1(S(v5),v4)=gAddAcc1(v5,S(v4));")
+      "gAddAcc1(a,a) where gAddAcc1(Z,v4)=v4;gAddAcc1(S(x5),v4)=gAddAcc1(x5,S(v4));")
 
     testAScp("gAddAcc(gAddAcc(a,b),c)", pAddAcc,
-      "gAddAcc1(a,b,c) where gAddAcc1(Z,b,c)=gAddAcc2(b,c);gAddAcc1(S(v1),b,c)=gAddAcc1(v1,S(b),c);gAddAcc2(Z,c)=c;gAddAcc2(S(v2),c)=gAddAcc2(v2,S(c));")
+      "gAddAcc1(a,b,c) where gAddAcc1(Z,b,c)=gAddAcc2(b,c);gAddAcc1(S(x1),b,c)=gAddAcc1(x1,S(b),c);gAddAcc2(Z,c)=c;gAddAcc2(S(x2),c)=gAddAcc2(x2,S(c));")
 
     // More general
     testAScp("f(a)", "f(x) = f(S(x));", "f1(a) where f1(a)=f1(S(a));")

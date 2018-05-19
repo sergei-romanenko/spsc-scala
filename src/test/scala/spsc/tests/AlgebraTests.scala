@@ -96,4 +96,10 @@ class AlgebraTests extends FunSuite {
   test(testName = "502 equiv") {
     equivNo(e1 = "gA(fB(x,y),x)", e2 = "gA(fB(a,a),b)")
   }
+
+  test("NameGen") {
+    val ng = new NameGen(Seq("B2", "D5"))
+    assert(List("A", "B", "C", "D", "E").map(ng.freshName)
+      == List("A1", "B3", "C4", "D6", "E7"))
+  }
 }

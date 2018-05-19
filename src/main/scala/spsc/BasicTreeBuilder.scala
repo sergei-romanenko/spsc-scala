@@ -5,8 +5,7 @@ import Algebra._
 import Tree._
 
 class BasicTreeBuilder(prog: Program) {
-
-  def freshPat(p: Pat) = Pat(p.name, p.params.map(_ => freshVarName()))
+  val ng = new NameGen(Seq())
 
   def applyContr(oc: Option[Contraction])(term: Term): Term = oc match {
     case None =>
@@ -30,11 +29,11 @@ class BasicTreeBuilder(prog: Program) {
       List((applySubst(subst)(g.term), None))
     case GCall(name, (v: Var) :: args) =>
       for (g <- prog.gs(name)) yield {
-        val p = freshPat(g.pat)
-        val c = Some(Contraction(v.name, p))
-        val cargs = p.params.map(Var)
+        val p1 = g.pat.copy(params = g.pat.params.map(ng.freshName))
+        val c = Some(Contraction(v.name, p1))
+        val cargs1 = p1.params.map(Var)
         val args1 = args.map(applyContr(c))
-        val subst = Map(g.allParams.zip(cargs ::: args1): _*)
+        val subst = Map(g.allParams.zip(cargs1 ::: args1): _*)
         (applySubst(subst)(g.term), c)
       }
     case GCall(name, arg0 :: args) =>

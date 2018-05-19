@@ -1,15 +1,14 @@
 package spsc.tests
 
 import org.scalatest.FunSuite
-import spsc.Algebra._
-import spsc.MSG._
 import spsc._
 
 class MsgTests extends FunSuite {
 
   def msgOK(e1: String, e2: String, expected: String): Unit = {
-    resetVarGen()
-    val gen = msg(SLLParsers.parseTerm(e1), SLLParsers.parseTerm(e2))
+    val ng = new NameGen(Seq())
+    val msgen = new MSGen(ng)
+    val gen = msgen.msg(SLLParsers.parseTerm(e1), SLLParsers.parseTerm(e2))
     assert(gen.toString == expected)
   }
 

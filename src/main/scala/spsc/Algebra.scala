@@ -1,5 +1,7 @@
 package spsc
 
+import scala.annotation.tailrec
+
 object Algebra {
 
   type Subst = Map[String, Term]
@@ -50,17 +52,23 @@ object Algebra {
   def equiv(t1: Term, t2: Term): Boolean =
     instOf(t1, t2) && instOf(t2, t1)
 
-  // Generating variable names.
+}
 
-  private var i = 0
+// Generating variable names.
 
-  def resetVarGen(): Unit = {
-    i = 0
-  }
+class NameGen(val existing: Seq[String]) {
+  private var i: Int = 0
+  private val used = scala.collection.mutable.Set[String]() ++ existing
 
-  def freshVarName(): String = {
+  @tailrec
+  final def freshName(prefix: String): String = {
     i += 1
-    "v" + i
+    val name = prefix + i
+    if (used.contains(name))
+      freshName(prefix)
+    else {
+      used += name
+      name
+    }
   }
-
 }

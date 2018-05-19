@@ -34,7 +34,6 @@ class BasicTreeBuilderTests extends FunSuite {
     drStep0(SLLParsers.parseProg(prog), SLLParsers.parseTerm(e), expected)
 
   def drStep0(prog: Program, term: Term, expected: String): Unit = {
-    resetVarGen()
     val builder = new BasicTreeBuilder(prog)
     val branches = builder.driveTerm(term)
     val branches_s = (branches map { case (exp, oc) =>
@@ -59,12 +58,12 @@ class BasicTreeBuilderTests extends FunSuite {
 
   test(testName = "104 GCallVar") {
     drStep(prog = pAddAcc, e = "gAddAcc(a,b)",
-      expected = "(b,a=Z)+(gAddAcc(v1,S(b)),a=S(v1))")
+      expected = "(b,a=Z)+(gAddAcc(x1,S(b)),a=S(x1))")
   }
 
   test(testName = "105 GCallGeneral") {
     drStep(prog = pAddAcc, e = "gAddAcc(gAddAcc(a,b),c)",
-      expected = "(gAddAcc(b,c),a=Z)+(gAddAcc(gAddAcc(v1,S(b)),c),a=S(v1))")
+      expected = "(gAddAcc(b,c),a=Z)+(gAddAcc(gAddAcc(x1,S(b)),c),a=S(x1))")
   }
 
 //  test(testName = "106 Let") {
@@ -76,6 +75,6 @@ class BasicTreeBuilderTests extends FunSuite {
 
   test(testName = "107 a a") {
     drStep(pAdd, "gAdd(a,a)",
-      expected = "(Z,a=Z)+(S(gAdd(v1,S(v1))),a=S(v1))")
+      expected = "(Z,a=Z)+(S(gAdd(x1,S(x1))),a=S(x1))")
   }
 }
