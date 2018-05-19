@@ -7,12 +7,12 @@ import spsc._
 class AlgebraTests extends FunSuite {
 
   test(testName = "101 shellEq") {
-    assert(shellEq(Ctr("A", Nil), Ctr("A", Nil)))
-    assert(shellEq(FCall("A", Nil), FCall("A", Nil)))
-    assert(shellEq(GCall("A", Nil), GCall("A", Nil)))
-    assert(!shellEq(Ctr("A", Nil), Ctr("B", Nil)))
-    assert(!shellEq(Ctr("A", Nil), FCall("A", Nil)))
-    assert(!shellEq(Ctr("A", Nil), Ctr("A", List(Var("y")))))
+    assert(shellowEq(Ctr("A", Nil), Ctr("A", Nil)))
+    assert(shellowEq(FCall("A", Nil), FCall("A", Nil)))
+    assert(shellowEq(GCall("A", Nil), GCall("A", Nil)))
+    assert(!shellowEq(Ctr("A", Nil), Ctr("B", Nil)))
+    assert(!shellowEq(Ctr("A", Nil), FCall("A", Nil)))
+    assert(!shellowEq(Ctr("A", Nil), Ctr("A", List(Var("y")))))
   }
 
   test(testName = "201 applySubst") {

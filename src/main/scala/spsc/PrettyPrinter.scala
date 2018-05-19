@@ -20,7 +20,7 @@ object PrettyPrinter {
   // Pretty printing trees.
 
   def docTree(tree: Tree): Doc =
-    docNode(tree, tree.getNode(0)) + Doc.line
+    docNode(tree, tree(0)) + Doc.line
 
   def docNode(tree: Tree, node: Node): Doc = {
     docContr(node.contr) +
@@ -48,7 +48,7 @@ object PrettyPrinter {
   }
 
   def docChildren(tree: Tree, node: Node): Doc = {
-    val ns = node.children.map(tree.getNode(_))
+    val ns = node.children.map(tree(_))
     if (ns.isEmpty)
       Doc.empty
     else {

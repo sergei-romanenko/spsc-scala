@@ -8,7 +8,7 @@ class ResProgGen(val tree: Tree) {
   private val defs =
     new scala.collection.mutable.ListBuffer[Rule]
   lazy val result: Task =
-    Task(walk(tree.getNode(0)), Program(defs.toList.sortWith(
+    Task(walk(tree(0)), Program(defs.toList.sortWith(
       (r1, r2) => r1.name < r2.name)))
   
   private def walk(n: Node): Term = {
@@ -16,7 +16,7 @@ class ResProgGen(val tree: Tree) {
     if (fa.isEmpty) n.term match {
       case v: Var => v
       case Let(_, bs) =>
-        var body = walk(tree.getNode(n.children.head))
+        val body = walk(tree(n.children.head))
         val ks = bs map { case (k, _) => k }
         val ts = n.children.tail.map(tree(_)).map(walk)
         applySubst(Map(ks zip ts: _*))(body)
