@@ -2,7 +2,7 @@ package spsc
 
 import Algebra._
 
-class AdvancedTreeBuilder(prog: Program) extends BasicTreeBuilder(prog) {
+class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task) {
   val msgen = new MSGen(ng)
 
   def abstractNode(t: Tree, a: Node, term: Term,
@@ -10,12 +10,13 @@ class AdvancedTreeBuilder(prog: Program) extends BasicTreeBuilder(prog) {
     t.decompose(a, term, bs)
   }
 
-  def splitNode(t: Tree, n: Node): Tree = n.term match {
+  def splitNode(t: Tree, n: Node): Tree = (n.term: @unchecked) match {
     case term: CFG =>
       val ns = term.args.map(_ => ng.freshName(prefix = "v"))
       val term1 = term.copy(args = ns.map(Var))
       val bs = ns.zip(term.args)
       t.decompose(n, term1, bs)
+
   }
 
   def generalizeAlphaOrSplit(t: Tree, b: Node, a: Node): Tree = {

@@ -1,6 +1,6 @@
 package spsc
 
-abstract class Term
+sealed abstract class Term
 
 case class Var(name: String) extends Term {
   override def toString: String = name
@@ -19,7 +19,7 @@ case class CFG(kind: TKind.Value, name: String, args: List[Term]) extends Term {
       name + args.mkString("(", ",", ")")
 }
 
-abstract class CFGObject(kind: TKind.Value)
+sealed abstract class CFGObject(kind: TKind.Value)
   extends Function2[String, List[Term], CFG] {
 
   def apply(name: String, args: List[Term]) = CFG(kind, name, args)
@@ -49,7 +49,7 @@ case class Pat(name: String, params: List[String]) {
       name + params.mkString("(", ",", ")")
 }
 
-abstract class Rule {
+sealed abstract class Rule {
   def name: String
 }
 

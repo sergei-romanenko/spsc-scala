@@ -26,11 +26,11 @@ class AlgebraTests extends FunSuite {
 
   test(testName = "302 vars") {
     val e = SLLParsers.parseTerm("A(x,B(y,z),a)")
-    assert(vars(e)
+    assert(termVars(e)
       == List("x", "y", "z", "a"))
 
     val e1 = SLLParsers.parseTerm("A(x,B(y,x),a)")
-    assert(vars(e1)
+    assert(termVars(e1)
       == List("x", "y", "a"))
   }
 
@@ -97,9 +97,16 @@ class AlgebraTests extends FunSuite {
     equivNo(e1 = "gA(fB(x,y),x)", e2 = "gA(fB(a,a),b)")
   }
 
-  test("NameGen") {
+  test(testName = "NameGen") {
     val ng = new NameGen(Seq("B2", "D5"))
     assert(List("A", "B", "C", "D", "E").map(ng.freshName)
       == List("A1", "B3", "C4", "D6", "E7"))
+  }
+
+  test(testName = "taskNames") {
+    val sTask = "a where f(x)=x; g(C(p),q) = f(R(p,q));"
+    val task = SLLParsers.parseTask(sTask)
+    val ns = taskNames(task).toList.sortWith(_<_)
+    assert(ns.mkString(",") == "C,R,a,f,g,p,q,x")
   }
 }

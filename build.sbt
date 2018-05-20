@@ -10,7 +10,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 libraryDependencies += "org.typelevel" %% "paiges-core" % "0.2.0"
 
-scalacOptions ++= Seq("-deprecation", "-feature")
+scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked")
 
 testOptions in Test += Tests.Argument(args= "-oD")
 

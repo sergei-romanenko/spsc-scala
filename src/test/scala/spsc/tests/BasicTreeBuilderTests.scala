@@ -34,7 +34,7 @@ class BasicTreeBuilderTests extends FunSuite {
     drStep0(SLLParsers.parseProg(prog), SLLParsers.parseTerm(e), expected)
 
   def drStep0(prog: Program, term: Term, expected: String): Unit = {
-    val builder = new BasicTreeBuilder(prog)
+    val builder = new BasicTreeBuilder(Task(term, prog))
     val branches = builder.driveTerm(term)
     val branches_s = (branches map { case (exp, oc) =>
       "(" + exp.toString + "," +

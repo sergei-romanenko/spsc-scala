@@ -147,9 +147,9 @@ object Sample {
   def runAdvancedBuilder(targetText: String, programText: String): Unit = {
     val program = SLLParsers.parseProg(programText)
     val target = SLLParsers.parseTerm(targetText)
-    val builder = new AdvancedTreeBuilder(program)
-    val tree = builder.buildProcessTree(target)
-    val Task(resTerm, resProgram) = new ResProgGen(tree).result
+    val builder = new AdvancedTreeBuilder(Task(target, program))
+    val tree = builder.buildProcessTree()
+    val Task(resTerm, resProgram) = new ResProgGen(tree).buildResProg()
     println("** runSuperCompiler **"); println()
     println(target); println(); println(program)
     println(); println()
@@ -160,9 +160,9 @@ object Sample {
   def runBasicBuilder(targetText: String, programText: String): Unit = {
     val program = SLLParsers.parseProg(programText)
     val target = SLLParsers.parseTerm(targetText)
-    val builder = new BasicTreeBuilder(program)
-    val tree = builder.buildProcessTree(target)
-    val Task(resTerm, resProgram) = new ResProgGen(tree).result
+    val builder = new BasicTreeBuilder(Task(target, program))
+    val tree = builder.buildProcessTree()
+    val Task(resTerm, resProgram) = new ResProgGen(tree).buildResProg()
     println("** runBaseSuperCompiler **"); println()
     println(target); println(); println(program)
     println(); println()

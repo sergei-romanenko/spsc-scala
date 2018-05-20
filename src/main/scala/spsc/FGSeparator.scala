@@ -12,8 +12,6 @@ case class FGSeparator(isGName: String => Boolean) {
     case FCall(name, args) =>
       val args1 = args.map(toTerm)
       if (isGName(name)) GCall(name, args1) else FCall(name, args1)
-    case _ =>
-      sys.error("toTerm")
   }
 
   def toFRule(r: FRule): FRule =

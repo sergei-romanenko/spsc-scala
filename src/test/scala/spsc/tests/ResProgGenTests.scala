@@ -8,19 +8,19 @@ class ResProgGenTests extends FunSuite {
   def runBScp(t: String, p: String): String = {
     val term = SLLParsers.parseTerm(t)
     val prog = SLLParsers.parseProg(p)
-    val builder = new BasicTreeBuilder(prog)
-    val tree = builder.buildProcessTree(term)
+    val builder = new BasicTreeBuilder(Task(term, prog))
+    val tree = builder.buildProcessTree()
     val rpg = new ResProgGen(tree)
-    rpg.result.toString
+    rpg.buildResProg().toString
   }
 
   def runAScp(t: String, p: String): String = {
     val term = SLLParsers.parseTerm(t)
     val prog = SLLParsers.parseProg(p)
-    val builder = new AdvancedTreeBuilder(prog)
-    val tree = builder.buildProcessTree(term)
+    val builder = new AdvancedTreeBuilder(Task(term, prog))
+    val tree = builder.buildProcessTree()
     val rpg = new ResProgGen(tree)
-    rpg.result.toString
+    rpg.buildResProg().toString
   }
 
   def testBScp(t: String, p: String, e: String): Unit = {

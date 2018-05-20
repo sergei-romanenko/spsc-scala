@@ -60,7 +60,7 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   def runParser[T](p: Parser[T], s: String): T = {
     parseAll(p, s) match {
       case Success(result, _) => result
-      case failure: NoSuccess => scala.sys.error(failure.msg)
+      case failure: NoSuccess => sys.error(failure.msg)
     }
   }
 

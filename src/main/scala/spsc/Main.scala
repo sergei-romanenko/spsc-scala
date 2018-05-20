@@ -37,12 +37,12 @@ object Main extends App {
         System.exit(1)
       case None =>
     }
-    val builder = new AdvancedTreeBuilder(task.prog)
-    val tree = builder.buildProcessTree(task.term)
+    val builder = new AdvancedTreeBuilder(task)
+    val tree = builder.buildProcessTree()
     wrStr(pathTree, ppTree(tree))
     println("* Process tree written to " + pathTree)
     val rpg = new ResProgGen(tree)
-    val resTask = rpg.result
+    val resTask = rpg.buildResProg()
     wrStr(pathRes, ppTask(resTask))
     println("* Output written to " + pathRes)
   } catch {

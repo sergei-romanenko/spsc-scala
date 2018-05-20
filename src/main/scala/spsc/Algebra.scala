@@ -11,22 +11,34 @@ object Algebra {
       t1.name == t2.name &&
       t1.args.length == t2.args.length
 
-  def applySubst(m: Subst): Term => Term = {
+  def applySubst(m: Subst)(term: Term): Term = (term: @unchecked) match {
     case v: Var => m.getOrElse(v.name, v)
     case t: CFG => t.copy(args = t.args.map(applySubst(m)))
   }
 
-  def vars: Term => List[String] = {
+  def termVars(term: Term): List[String] = (term: @unchecked) match {
     case v: Var => List(v.name)
     case t: CFG =>
-      (List[String]() /: t.args) { (ns, term) => (ns ::: vars(term)).distinct }
+      (List[String]() /: t.args) { (ns, term) => (ns ::: termVars(term)).distinct }
   }
 
-  def isFGCall: Term => Boolean = {
-    case FCall(_, _) => true
-    case GCall(_, _) => true
-    case _ => false
+  def termNames(term: Term): Set[String] = term match {
+    case Var(name) => Set(name)
+    case CFG(kind, name, args) =>
+      (Set(name) /: args.map(termNames)) (_ ++ _)
+    case Let(term0, bs) =>
+      ((termNames(term0) ++ bs.map(_._1)) /: bs.map(_._2).map(termNames))(_++_)
   }
+
+  def ruleNames: Rule => Set[String] = {
+    case FRule (name, params, term) =>
+      Set(name) ++ params ++ termNames(term)
+    case GRule (name, pat, params, term) =>
+      Set(name) + pat.name ++ pat.params ++ params ++ termNames(term)
+  }
+
+  def taskNames(task: Task) : Set[String] =
+    (termNames(task.term) /: task.prog.rules.map(ruleNames))(_++_)
 
   def matchLoop(m: Subst): List[(Term, Term)] => Option[Subst] = {
     case Nil =>
@@ -56,9 +68,9 @@ object Algebra {
 
 // Generating variable names.
 
-class NameGen(val existing: Seq[String]) {
+class NameGen(val reserved: Seq[String]) {
   private var i: Int = 0
-  private val used = scala.collection.mutable.Set[String]() ++ existing
+  private val used = scala.collection.mutable.Set[String]() ++ reserved
 
   @tailrec
   final def freshName(prefix: String): String = {

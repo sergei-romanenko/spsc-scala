@@ -38,7 +38,7 @@ class SLLCheck(val task: Task) {
 
   // Collecting variable names.
 
-  def vTerm(term: Term): List[String] = term match {
+  def vTerm(term: Term): List[String] = (term: @unchecked) match {
     case Var(name) =>
       List(name)
     case CFG(kind, name, args) =>
@@ -105,7 +105,7 @@ class SLLCheck(val task: Task) {
   // and all calls to g-functions are marked as GCalls.
   // So, we only need to check that there are rules for FCalls.
 
-  def fTerm(term: Term): List[String] = term match {
+  def fTerm(term: Term): List[String] = (term: @unchecked) match {
     case Var(_) =>
       Nil
     case CFG(kind, name, args) =>
@@ -181,7 +181,7 @@ trait ArChecker {
 
 case class CArChecker() extends ArChecker {
 
-  def caTerm(term: Term): Option[String] = term match {
+  def caTerm(term: Term): Option[String] = (term: @unchecked) match {
     case Var(name) =>
       None
     case CFG(TKind.Ctr, name, args) =>
@@ -212,7 +212,7 @@ case class CArChecker() extends ArChecker {
 
 case class HArChecker() extends ArChecker {
 
-  def haTerm(term: Term): Option[String] = term match {
+  def haTerm(term: Term): Option[String] = (term: @unchecked) match {
     case Var(name) =>
       None
     case CFG(TKind.Ctr, name, args) =>

@@ -4,8 +4,12 @@ import scala.annotation.tailrec
 import Algebra._
 import Tree._
 
-class BasicTreeBuilder(prog: Program) {
-  val ng = new NameGen(Seq())
+class BasicTreeBuilder(task: Task) {
+
+  def initNameGen: NameGen =
+    new NameGen(taskNames(task).toSeq)
+
+  protected val ng: NameGen = initNameGen
 
   def applyContr(oc: Option[Contraction])(term: Term): Term = oc match {
     case None =>
@@ -16,19 +20,19 @@ class BasicTreeBuilder(prog: Program) {
       applySubst(subst)(term)
   }
 
-  def driveTerm(term: Term): List[Branch] = term match {
+  def driveTerm: Term => List[Branch] = {
     case Ctr(name, args) =>
       args.map((_, None))
     case FCall(name, args) =>
-      val f = prog.f(name)
+      val f = task.prog.f(name)
       val subst = Map(f.params.zip(args): _*)
       List((applySubst(subst)(f.term), None))
     case GCall(name, Ctr(cname, cargs) :: args) =>
-      val g = prog.g(name, cname)
+      val g = task.prog.g(name, cname)
       val subst = Map(g.allParams.zip(cargs ::: args): _*)
       List((applySubst(subst)(g.term), None))
     case GCall(name, (v: Var) :: args) =>
-      for (g <- prog.gs(name)) yield {
+      for (g <- task.prog.gs(name)) yield {
         val p1 = g.pat.copy(params = g.pat.params.map(ng.freshName))
         val c = Some(Contraction(v.name, p1))
         val cargs1 = p1.params.map(Var)
@@ -40,8 +44,6 @@ class BasicTreeBuilder(prog: Program) {
       val bs = driveTerm(arg0)
       for ((t, c) <- bs) yield
         (GCall(name, t :: args.map(applyContr(c))), c)
-    case Let(term0, bs) =>
-      sys.error("driveTerm")
   }
 
   // -- The basic build step.
@@ -84,7 +86,7 @@ class BasicTreeBuilder(prog: Program) {
     }
   }
 
-  def buildProcessTree(term: Term): Tree =
-    buildLoop(Tree.create(term))
+  def buildProcessTree(): Tree =
+    buildLoop(Tree.create(task.term))
 
 }

@@ -169,11 +169,32 @@ object Tree {
     case _ => false
   }
 
+  def isFGCall: Term => Boolean = {
+    case FCall(_, _) => true
+    case GCall(_, _) => true
+    case _ => false
+  }
+
   def isMoreGeneral(b: Node)(a: Node): Boolean =
     isFGCall(a.term) && instOf(b.term, a.term)
 
   def isEmbeddedAncestor(b: Node)(a: Node): Boolean =
     isFGCall(a.term) && HE.embeddedIn(a.term, b.term)
+
+  // Names appearing in a tree.
+
+  def nodeNames(n: Node) : Set[String] = {
+    val tns = termNames(n.term)
+    n.contr match {
+      case None => tns
+      case Some(Contraction(v, pat)) =>
+        tns + v + pat.name ++ pat.params
+    }
+  }
+
+  def treeNames(tree: Tree) : Set[String] = {
+    (Set[String]() /: tree.nodes.map(nodeNames))(_++_)
+  }
 
   // Initial tree.
 
