@@ -27,23 +27,25 @@ class BasicTreeBuilder(task: Task) {
       val f = task.prog.f(name)
       val subst = Map(f.params.zip(args): _*)
       List((applySubst(subst)(f.term), None))
-    case GCall(name, Ctr(cname, cargs) :: args) =>
-      val g = task.prog.g(name, cname)
-      val subst = Map(g.allParams.zip(cargs ::: args): _*)
-      List((applySubst(subst)(g.term), None))
-    case GCall(name, (v: Var) :: args) =>
-      for (g <- task.prog.gs(name)) yield {
-        val p1 = g.pat.copy(params = g.pat.params.map(ng.freshName))
-        val c = Some(Contraction(v.name, p1))
-        val cargs1 = p1.params.map(Var)
-        val args1 = args.map(applyContr(c))
-        val subst = Map(g.allParams.zip(cargs1 ::: args1): _*)
-        (applySubst(subst)(g.term), c)
-      }
-    case GCall(name, arg0 :: args) =>
-      val bs = driveTerm(arg0)
-      for ((t, c) <- bs) yield
-        (GCall(name, t :: args.map(applyContr(c))), c)
+    case GCall(name, arg0 :: args) => arg0 match {
+      case Ctr(cname, cargs) =>
+        val g = task.prog.g(name, cname)
+        val subst = Map(g.allParams.zip(cargs ::: args): _*)
+        List((applySubst(subst)(g.term), None))
+      case v: Var =>
+        for (g <- task.prog.gs(name)) yield {
+          val p1 = g.pat.copy(params = g.pat.params.map(ng.freshName))
+          val c = Some(Contraction(v.name, p1))
+          val cargs1 = p1.params.map(Var)
+          val args1 = args.map(applyContr(c))
+          val subst = Map(g.allParams.zip(cargs1 ::: args1): _*)
+          (applySubst(subst)(g.term), c)
+        }
+      case _ =>
+        val bs = driveTerm(arg0)
+        for ((t, c) <- bs) yield
+          (GCall(name, t :: args.map(applyContr(c))), c)
+    }
   }
 
   // -- The basic build step.

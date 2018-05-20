@@ -16,7 +16,7 @@ class ResTaskGen(val tree: Tree) {
     }).toSet
 
   private val sigs =
-    scala.collection.mutable.Map[Node, (String, List[Var])]()
+    scala.collection.mutable.Map[NodeId, (String, List[Var])]()
   private val defs =
     new scala.collection.mutable.ListBuffer[Rule]
 
@@ -34,7 +34,7 @@ class ResTaskGen(val tree: Tree) {
       case GCall(name, args) => walkCall(n, name, args)
     } else {
       val q = fa.get
-      val (name, args) = sigs(q)
+      val (name, args) = sigs(q.nodeId)
       if (tree(q.children.head).contr.isEmpty)
         applySubst(matchAgainst(q.term, n.term).get)(FCall(name, args))
       else
@@ -46,12 +46,14 @@ class ResTaskGen(val tree: Tree) {
     val ns = vars(n.term)
     val vs = ns.map(Var)
     if (tree(n.children.head).contr.isDefined) {
-      val (gname, _) = sigs.getOrElseUpdate(n, (ng.freshName(name), vs))
+      val (gname, _) =
+        sigs.getOrElseUpdate(n.nodeId, (ng.freshName(name), vs))
       for (cn <- n.children.map(tree(_)))
           defs += GRule(gname, cn.contr.get.pat, ns.tail, walk(cn))
       GCall(gname, vs)
     } else if (funcNodeIds.contains(n.nodeId)) {
-      val (fname, fargs) = sigs.getOrElseUpdate(n, (ng.freshName(name), vs))
+      val (fname, fargs) =
+        sigs.getOrElseUpdate(n.nodeId, (ng.freshName(name), vs))
       defs += FRule(fname, fargs.map(_.name), walk(tree(n.children.head)))
       FCall(fname, vs)
     } else walk(tree(n.children.head))
