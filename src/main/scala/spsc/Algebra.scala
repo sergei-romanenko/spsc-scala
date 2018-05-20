@@ -16,29 +16,29 @@ object Algebra {
     case t: CFG => t.copy(args = t.args.map(applySubst(m)))
   }
 
-  def termVars(term: Term): List[String] = (term: @unchecked) match {
+  def vars(term: Term): List[String] = (term: @unchecked) match {
     case v: Var => List(v.name)
     case t: CFG =>
-      (List[String]() /: t.args) { (ns, term) => (ns ::: termVars(term)).distinct }
+      (List[String]() /: t.args) { (ns, term) => (ns ::: vars(term)).distinct }
   }
 
-  def termNames(term: Term): Set[String] = term match {
+  def names(term: Term): Set[String] = term match {
     case Var(name) => Set(name)
     case CFG(kind, name, args) =>
-      (Set(name) /: args.map(termNames)) (_ ++ _)
+      (Set(name) /: args.map(names)) (_ ++ _)
     case Let(term0, bs) =>
-      ((termNames(term0) ++ bs.map(_._1)) /: bs.map(_._2).map(termNames))(_++_)
+      ((names(term0) ++ bs.map(_._1)) /: bs.map(_._2).map(names))(_++_)
   }
 
-  def ruleNames: Rule => Set[String] = {
+  def names: Rule => Set[String] = {
     case FRule (name, params, term) =>
-      Set(name) ++ params ++ termNames(term)
+      Set(name) ++ params ++ names(term)
     case GRule (name, pat, params, term) =>
-      Set(name) + pat.name ++ pat.params ++ params ++ termNames(term)
+      Set(name) + pat.name ++ pat.params ++ params ++ names(term)
   }
 
-  def taskNames(task: Task) : Set[String] =
-    (termNames(task.term) /: task.prog.rules.map(ruleNames))(_++_)
+  def names(task: Task) : Set[String] =
+    (names(task.term) /: task.prog.rules.map(names))(_++_)
 
   def matchLoop(m: Subst): List[(Term, Term)] => Option[Subst] = {
     case Nil =>

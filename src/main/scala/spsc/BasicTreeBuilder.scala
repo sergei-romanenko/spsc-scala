@@ -7,7 +7,7 @@ import Tree._
 class BasicTreeBuilder(task: Task) {
 
   def initNameGen: NameGen =
-    new NameGen(taskNames(task).toSeq)
+    new NameGen(names(task).toSeq)
 
   protected val ng: NameGen = initNameGen
 

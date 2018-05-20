@@ -7,7 +7,13 @@ class ResTaskGen(val tree: Tree) {
   def initNameGen: NameGen =
     new NameGen(treeNames(tree).toSeq)
 
-  protected val ng: NameGen = initNameGen
+  private val ng: NameGen = initNameGen
+
+  private val funcNodeIds : Set[NodeId] =
+    tree.leaves.flatMap(n => n.back match {
+      case None => Nil
+      case Some(backId) => backId :: Nil
+    }).toSet
 
   private val sigs =
     scala.collection.mutable.Map[Node, (String, List[Var])]()
@@ -37,21 +43,21 @@ class ResTaskGen(val tree: Tree) {
   }
 
   def walkCall(n: Node, name: String, args: List[Term]): Term = {
-    val ns = termVars(n.term)
+    val ns = vars(n.term)
     val vs = ns.map(Var)
     if (tree(n.children.head).contr.isDefined) {
       val (gname, _) = sigs.getOrElseUpdate(n, (ng.freshName(name), vs))
       for (cn <- n.children.map(tree(_)))
           defs += GRule(gname, cn.contr.get.pat, ns.tail, walk(cn))
       GCall(gname, vs)
-    } else if (tree.leaves.exists(tree.findFuncAncestor(_).contains(n))) {
+    } else if (funcNodeIds.contains(n.nodeId)) {
       val (fname, fargs) = sigs.getOrElseUpdate(n, (ng.freshName(name), vs))
       defs += FRule(fname, fargs.map(_.name), walk(tree(n.children.head)))
       FCall(fname, vs)
     } else walk(tree(n.children.head))
   }
 
-  def buildResProg(): Task =
+  def buildResTask(): Task =
     Task(walk(tree(0)), Program(defs.toList.sortWith(
       (r1, r2) => r1.name < r2.name)))
 }

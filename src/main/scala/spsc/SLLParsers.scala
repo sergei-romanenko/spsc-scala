@@ -69,13 +69,13 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   def parseTerm(s: String): Term = {
     val rawTerm = runParser(term, s)
     val fg = new FGSeparator(startsWithG)
-    fg.toTerm(rawTerm)
+    fg.fgSep(rawTerm)
   }
 
   def parseProg(s: String): Program = {
     val rawProg = runParser(prog, s)
     val fg = new FGSeparator(startsWithG)
-    fg.toProgram(rawProg)
+    fg.fgSep(rawProg)
   }
 
   // `parseTask` classifies function names according to their definitions,
@@ -84,7 +84,7 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   def parseTask(s: String): Task = {
     val rawTask = runParser(task, s)
     val fg = new FGSeparator(isGNameInProg(rawTask.prog))
-    fg.toTask(rawTask)
+    fg.fgSep(rawTask)
   }
 
 }

@@ -11,7 +11,7 @@ class ResTaskGenTests extends FunSuite {
     val builder = new BasicTreeBuilder(Task(term, prog))
     val tree = builder.buildProcessTree()
     val rpg = new ResTaskGen(tree)
-    rpg.buildResProg().toString
+    rpg.buildResTask().toString
   }
 
   def runAScp(t: String, p: String): String = {
@@ -20,7 +20,7 @@ class ResTaskGenTests extends FunSuite {
     val builder = new AdvancedTreeBuilder(Task(term, prog))
     val tree = builder.buildProcessTree()
     val rpg = new ResTaskGen(tree)
-    rpg.buildResProg().toString
+    rpg.buildResTask().toString
   }
 
   def testBScp(t: String, p: String, e: String): Unit = {

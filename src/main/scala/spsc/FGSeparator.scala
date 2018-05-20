@@ -4,34 +4,28 @@ package spsc
 
 case class FGSeparator(isGName: String => Boolean) {
 
-  def toTerm(term: Term): Term = term match {
+  def fgSep(term: Term): Term = term match {
     case Var(name) =>
       Var(name)
     case Ctr(name, args) =>
-      Ctr(name, args.map(toTerm))
+      Ctr(name, args.map(fgSep))
     case FCall(name, args) =>
-      val args1 = args.map(toTerm)
+      val args1 = args.map(fgSep)
       if (isGName(name)) GCall(name, args1) else FCall(name, args1)
   }
 
-  def toFRule(r: FRule): FRule =
-    FRule(r.name, r.params, toTerm(r.term))
-
-  def toGRule(r: GRule): GRule =
-    GRule(r.name, r.pat, r.params, toTerm(r.term))
-
-  def toRule(r: Rule): Rule = r match {
+  def fgSep(r: Rule): Rule = r match {
     case FRule(name, params, term) =>
-      FRule(name, params, toTerm(term))
+      FRule(name, params, fgSep(term))
     case GRule(name, pat, params, term) =>
-      GRule(name, pat, params, toTerm(term))
+      GRule(name, pat, params, fgSep(term))
   }
 
-  def toProgram(prog: Program): Program =
-    Program(prog.rules.map(toRule))
+  def fgSep(prog: Program): Program =
+    Program(prog.rules.map(fgSep))
 
-  def toTask(task: Task): Task =
-    Task(toTerm(task.term), toProgram(task.prog))
+  def fgSep(task: Task): Task =
+    Task(fgSep(task.term), fgSep(task.prog))
 }
 
 object FGSeparator {

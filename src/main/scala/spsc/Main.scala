@@ -42,7 +42,7 @@ object Main extends App {
     wrStr(pathTree, ppTree(tree))
     println("* Process tree written to " + pathTree)
     val rpg = new ResTaskGen(tree)
-    val resTask = rpg.buildResProg()
+    val resTask = rpg.buildResTask()
     wrStr(pathRes, ppTask(resTask))
     println("* Output written to " + pathRes)
   } catch {
