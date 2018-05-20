@@ -2,7 +2,7 @@ package spsc
 import Algebra._
 import Tree._
 
-class ResProgGen(val tree: Tree) {
+class ResTaskGen(val tree: Tree) {
 
   def initNameGen: NameGen =
     new NameGen(treeNames(tree).toSeq)

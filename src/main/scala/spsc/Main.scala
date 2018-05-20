@@ -41,7 +41,7 @@ object Main extends App {
     val tree = builder.buildProcessTree()
     wrStr(pathTree, ppTree(tree))
     println("* Process tree written to " + pathTree)
-    val rpg = new ResProgGen(tree)
+    val rpg = new ResTaskGen(tree)
     val resTask = rpg.buildResProg()
     wrStr(pathRes, ppTask(resTask))
     println("* Output written to " + pathRes)

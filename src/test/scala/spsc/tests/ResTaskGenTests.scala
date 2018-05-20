@@ -3,14 +3,14 @@ package spsc.tests
 import org.scalatest.FunSuite
 import spsc._
 
-class ResProgGenTests extends FunSuite {
+class ResTaskGenTests extends FunSuite {
 
   def runBScp(t: String, p: String): String = {
     val term = SLLParsers.parseTerm(t)
     val prog = SLLParsers.parseProg(p)
     val builder = new BasicTreeBuilder(Task(term, prog))
     val tree = builder.buildProcessTree()
-    val rpg = new ResProgGen(tree)
+    val rpg = new ResTaskGen(tree)
     rpg.buildResProg().toString
   }
 
@@ -19,7 +19,7 @@ class ResProgGenTests extends FunSuite {
     val prog = SLLParsers.parseProg(p)
     val builder = new AdvancedTreeBuilder(Task(term, prog))
     val tree = builder.buildProcessTree()
-    val rpg = new ResProgGen(tree)
+    val rpg = new ResTaskGen(tree)
     rpg.buildResProg().toString
   }
 
