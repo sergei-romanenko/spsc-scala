@@ -60,7 +60,12 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   def runParser[T](p: Parser[T], s: String): T = {
     parseAll(p, s) match {
       case Success(result, _) => result
-      case failure: NoSuccess => sys.error(failure.msg)
+      case NoSuccess(err, next) =>
+        val msg =
+          "Failed to parse the input task " +
+          s"(line ${next.pos.line}, column ${next.pos.column}):\n" +
+          s"$err\n${next.pos.longString}"
+        sys.error(msg)
     }
   }
 
