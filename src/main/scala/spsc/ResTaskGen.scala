@@ -18,7 +18,7 @@ class ResTaskGen(val tree: Tree) {
     }).toSet
 
   private val sigs =
-    scala.collection.mutable.Map[NodeId, (String, List[Var])]()
+    scala.collection.mutable.Map[NodeId, (Name, List[Var])]()
   private val defs =
     new scala.collection.mutable.ListBuffer[Rule]
 
@@ -37,10 +37,11 @@ class ResTaskGen(val tree: Tree) {
     } else {
       val q = fa.get
       val (name, args) = sigs(q.nodeId)
+      val subst = matchAgainst(q.term, n.term).get
       if (tree(q.children.head).contr.isEmpty)
-        applySubst(matchAgainst(q.term, n.term).get)(FCall(name, args))
+        applySubst(subst)(FCall(name, args))
       else
-        applySubst(matchAgainst(q.term, n.term).get)(GCall(name, args))
+        applySubst(subst)(GCall(name, args))
     }
   }
 

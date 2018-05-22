@@ -1,10 +1,9 @@
 package spsc
 
-import spsc.SLL._
+import SLL._
 
 object SLL {
   type Name = String
-  type Params = List[Name]
 }
 
 sealed abstract class Term
@@ -48,7 +47,7 @@ case class Let(term: Term, bindings: List[(Name, Term)]) extends Term {
   }
 }
 
-case class Pat(name: Name, params: Params) {
+case class Pat(name: Name, params: List[Name]) {
   override def toString: String =
     if (params.isEmpty)
       name
@@ -60,13 +59,14 @@ sealed abstract class Rule {
   def name: Name
 }
 
-case class FRule(name: Name, params: Params, term: Term) extends Rule {
+case class FRule(name: Name, params: List[Name], term: Term) extends Rule {
   override def toString: String =
     s"$name${params.mkString("(", ",", ")")}=$term;"
 }
 
-case class GRule(name: Name, pat: Pat, params: Params, term: Term) extends Rule {
-  val allParams: Params = pat.params ::: params
+case class GRule(name: Name, pat: Pat, params: List[Name],
+                 term: Term) extends Rule {
+  val allParams: List[Name] = pat.params ::: params
 
   override def toString: String =
     s"$name${(pat :: params).mkString("(", ",", ")")}=$term;"

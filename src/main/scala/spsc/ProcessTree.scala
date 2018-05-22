@@ -1,11 +1,12 @@
 package spsc
 
-import spsc.Algebra._
-import spsc.Tree._
+import Algebra._
+import SLL._
+import Tree._
 
 import scala.collection.immutable.TreeMap
 
-case class Contraction(n: String, pat: Pat) {
+case class Contraction(n: Name, pat: Pat) {
   override def toString: String = s"$n=$pat"
 }
 
@@ -141,7 +142,7 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
   // a let-expression, and then adds child nodes.
   // Thus, a let-node cannot be a leaf.
 
-  def decompose(n: Node, term: Term, bs: List[(String, Term)]): Tree = {
+  def decompose(n: Node, term: Term, bs: List[(Name, Term)]): Tree = {
     val (tree1, n1) = replaceSubtree(n, Let(term, bs))
     val cs = (term, None) :: bs.map({ case (_, t) => (t, None) })
     tree1.addChildren(n1, cs)
@@ -183,7 +184,7 @@ object Tree {
 
   // Names appearing in a tree.
 
-  def nodeNames(n: Node): Set[String] = {
+  def nodeNames(n: Node): Set[Name] = {
     val tns = termNames(n.term)
     n.contr match {
       case None => tns
@@ -192,8 +193,8 @@ object Tree {
     }
   }
 
-  def treeNames(tree: Tree): Set[String] =
-    (Set[String]() /: tree.nodes.map(nodeNames)) (_ ++ _)
+  def treeNames(tree: Tree): Set[Name] =
+    (Set[Name]() /: tree.nodes.map(nodeNames)) (_ ++ _)
 
   // Initial tree.
 
