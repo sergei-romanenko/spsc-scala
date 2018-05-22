@@ -1,23 +1,24 @@
 package spsc.tests
 
 import org.scalatest.FunSuite
+import spsc.SLLParsers.parseTask
 import spsc._
 
 class ResTaskGenTests extends FunSuite {
 
   def runBScp(t: String, p: String): String = {
-    val term = SLLParsers.parseTerm(t)
-    val prog = SLLParsers.parseProg(p)
-    val builder = new BasicTreeBuilder(Task(term, prog))
+    val input = t + " where " + p
+    val task = parseTask(input)
+    val builder = new BasicTreeBuilder(task)
     val tree = builder.buildProcessTree()
     val rpg = new ResTaskGen(tree)
     rpg.buildResTask().toString
   }
 
   def runAScp(t: String, p: String): String = {
-    val term = SLLParsers.parseTerm(t)
-    val prog = SLLParsers.parseProg(p)
-    val builder = new AdvancedTreeBuilder(Task(term, prog))
+    val input = t + " where " + p
+    val task = parseTask(input)
+    val builder = new AdvancedTreeBuilder(task)
     val tree = builder.buildProcessTree()
     val rpg = new ResTaskGen(tree)
     rpg.buildResTask().toString

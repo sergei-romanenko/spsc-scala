@@ -1,5 +1,7 @@
 package spsc
 
+import spsc.SLLParsers.parseTask
+
 object Sample {
   
   val target1  = 
@@ -145,28 +147,28 @@ object Sample {
   }
   
   def runAdvancedBuilder(targetText: String, programText: String): Unit = {
-    val program = SLLParsers.parseProg(programText)
-    val target = SLLParsers.parseTerm(targetText)
-    val builder = new AdvancedTreeBuilder(Task(target, program))
+    val input = targetText + " where " + programText
+    val task = parseTask(input)
+    val builder = new AdvancedTreeBuilder(task)
     val tree = builder.buildProcessTree()
-    val Task(resTerm, resProgram) = new ResTaskGen(tree).buildResTask()
+    val resTask = new ResTaskGen(tree).buildResTask()
     println("** runSuperCompiler **"); println()
-    println(target); println(); println(program)
+    println(task.toString)
     println(); println()
-    println(resTerm); println(); println(resProgram)
+    println(resTask.toString)
     println("-------")
   }
   
   def runBasicBuilder(targetText: String, programText: String): Unit = {
-    val program = SLLParsers.parseProg(programText)
-    val target = SLLParsers.parseTerm(targetText)
-    val builder = new BasicTreeBuilder(Task(target, program))
+    val input = targetText + " where " + programText
+    val task = parseTask(input)
+    val builder = new BasicTreeBuilder(task)
     val tree = builder.buildProcessTree()
-    val Task(resTerm, resProgram) = new ResTaskGen(tree).buildResTask()
+    val resTask = new ResTaskGen(tree).buildResTask()
     println("** runBaseSuperCompiler **"); println()
-    println(target); println(); println(program)
+    println(task.toString)
     println(); println()
-    println(resTerm); println(); println(resProgram)
+    println(resTask.toString)
     println("-------")
   }
 }

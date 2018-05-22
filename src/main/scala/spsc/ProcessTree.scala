@@ -183,8 +183,8 @@ object Tree {
 
   // Names appearing in a tree.
 
-  def nodeNames(n: Node) : Set[String] = {
-    val tns = names(n.term)
+  def nodeNames(n: Node): Set[String] = {
+    val tns = termNames(n.term)
     n.contr match {
       case None => tns
       case Some(Contraction(v, pat)) =>
@@ -192,9 +192,8 @@ object Tree {
     }
   }
 
-  def treeNames(tree: Tree) : Set[String] = {
-    (Set[String]() /: tree.nodes.map(nodeNames))(_++_)
-  }
+  def treeNames(tree: Tree): Set[String] =
+    (Set[String]() /: tree.nodes.map(nodeNames)) (_ ++ _)
 
   // Initial tree.
 

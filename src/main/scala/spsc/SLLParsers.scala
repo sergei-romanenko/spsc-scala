@@ -2,7 +2,7 @@ package spsc
 
 import scala.util.parsing.combinator.ImplicitConversions
 import scala.util.parsing.combinator.RegexParsers
-import spsc.FGSeparator.{isGNameInProg, startsWithG}
+import spsc.FGSeparator.{isGNameInRules, startsWithG}
 
 import scala.util.matching.Regex
 
@@ -11,10 +11,10 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   override val whiteSpace: Regex = """(\s|--.*)+""".r
 
   def task: SLLParsers.Parser[Task] =
-    term ~ ("where" ~> prog) ^^ Task
+    term ~ ("where" ~> rules) ^^ Task
 
-  def prog: SLLParsers.Parser[Program] =
-    rep(definition) ^^ Program
+  def rules: SLLParsers.Parser[List[Rule]] =
+    rep(definition)
 
   def definition: SLLParsers.Parser[Rule] =
     gRule | fRule
@@ -69,13 +69,7 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   def parseTerm(s: String): Term = {
     val rawTerm = runParser(term, s)
     val fg = new FGSeparator(startsWithG)
-    fg.fgSep(rawTerm)
-  }
-
-  def parseProg(s: String): Program = {
-    val rawProg = runParser(prog, s)
-    val fg = new FGSeparator(startsWithG)
-    fg.fgSep(rawProg)
+    fg.fgSepTerm(rawTerm)
   }
 
   // `parseTask` classifies function names according to their definitions,
@@ -83,8 +77,8 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
 
   def parseTask(s: String): Task = {
     val rawTask = runParser(task, s)
-    val fg = new FGSeparator(isGNameInProg(rawTask.prog))
-    fg.fgSep(rawTask)
+    val fg = new FGSeparator(isGNameInRules(rawTask.rules))
+    fg.fgSepTask(rawTask)
   }
 
 }

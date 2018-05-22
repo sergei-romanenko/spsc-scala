@@ -37,14 +37,14 @@ class SLLTests extends FunSuite {
   }
 
   test(testName = "Program.toString 104 StrProgram") {
-    assert(Program(List(
+    assert(List(
       FRule("f", Nil, Ctr("A", Nil)),
-      FRule("f1", Nil, Ctr("A1", Nil)))).toString
+      FRule("f1", Nil, Ctr("A1", Nil))).mkString("")
       === "f()=A;f1()=A1;")
-    assert(Program(List(
+    assert(List(
       GRule("g", Pat("C", Nil), Nil, Ctr("A", Nil)),
       GRule("g1", Pat("C", Nil), List("x"), Ctr("A", Nil)),
-      GRule("g2", Pat("C", List("x")), Nil, Ctr("A", Nil)))).toString
+      GRule("g2", Pat("C", List("x")), Nil, Ctr("A", Nil))).mkString("")
       === "g(C)=A;g1(C,x)=A;g2(C(x))=A;")
   }
 

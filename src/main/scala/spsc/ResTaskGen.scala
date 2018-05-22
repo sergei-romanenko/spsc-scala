@@ -1,6 +1,8 @@
 package spsc
-import Algebra._
-import Tree._
+
+import spsc.Algebra._
+import spsc.SLL._
+import spsc.Tree._
 
 class ResTaskGen(val tree: Tree) {
 
@@ -42,8 +44,8 @@ class ResTaskGen(val tree: Tree) {
     }
   }
 
-  def walkCall(n: Node, name: String, args: List[Term]): Term = {
-    val ns = vars(n.term)
+  def walkCall(n: Node, name: Name, args: List[Term]): Term = {
+    val ns = termVars(n.term)
     val vs = ns.map(Var)
     if (tree(n.children.head).contr.isDefined) {
       val (gname, _) =
@@ -60,6 +62,6 @@ class ResTaskGen(val tree: Tree) {
   }
 
   def buildResTask(): Task =
-    Task(walk(tree(0)), Program(defs.toList.sortWith(
-      (r1, r2) => r1.name < r2.name)))
+    Task(walk(tree(0)), defs.toList.sortWith(
+      (r1, r2) => r1.name < r2.name))
 }

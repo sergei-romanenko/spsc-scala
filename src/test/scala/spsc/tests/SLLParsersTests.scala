@@ -1,16 +1,13 @@
 package spsc.tests
 
 import org.scalatest.FunSuite
+import spsc.SLLParsers.parseTerm
 import spsc._
 
 class SLLParsersTests extends FunSuite {
 
   def pTerm(g: String, e: String): Unit = {
-    assert(SLLParsers.parseTerm(g).toString == e)
-  }
-
-  def pProg(g: String, e: String): Unit = {
-    assert(SLLParsers.parseProg(g).toString == e)
+    assert(parseTerm(g).toString == e)
   }
 
   def pTask(g: String, e: String): Unit = {
@@ -30,15 +27,13 @@ class SLLParsersTests extends FunSuite {
     pTerm("gX()", "gX()")
   }
 
-  test(testName = "parseProg") {
-
-    pProg("f(x,y) = f(y, x);g(C(x),y) = g(y, x);",
-      "f(x,y)=f(y,x);g(C(x),y)=g(y,x);")
-
-    pProg("g(Z,y)= y;", "g(Z,y)=y;")
-  }
-
   test(testName = "parseTask") {
+
+    pTask("a where f(x,y) = f(y, x);g(C(x),y) = g(y, x);",
+      "a where f(x,y)=f(y,x);g(C(x),y)=g(y,x);")
+
+    pTask("a where g(Z,y)= y;", "a where g(Z,y)=y;")
+
     pTask("f(x) where f(x) = f(x);",
       "f(x) where f(x)=f(x);")
 

@@ -2,20 +2,21 @@ package spsc.tests
 
 import org.scalatest.FunSuite
 import spsc.HE._
+import spsc.SLLParsers.parseTerm
 import spsc._
 
 class HeTests extends FunSuite {
 
   def heTrue(t1: String, t2: String): Unit = {
-    val e1 = SLLParsers.parseTerm(t1)
-    val e2 = SLLParsers.parseTerm(t2)
-    assert(embeddedIn(e1, e2))
+    val term1 = parseTerm(t1)
+    val term2 = parseTerm(t2)
+    assert(embeddedIn(term1, term2))
   }
 
   def heFalse(t1: String, t2: String): Unit = {
-    val e1 = SLLParsers.parseTerm(t1)
-    val e2 = SLLParsers.parseTerm(t2)
-    assert(!embeddedIn(e1, e2))
+    val term1 = parseTerm(t1)
+    val term2 = parseTerm(t2)
+    assert(!embeddedIn(term1, term2))
   }
 
   test(testName = "201 he") {

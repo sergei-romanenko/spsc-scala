@@ -7,12 +7,12 @@ object PrettyPrinter {
 
   // Pretty printing tasks.
 
-  def docProgram(prog: Program): Doc =
-    stack(prog.rules.map(Doc.str))
+  def docRules(rules: List[Rule]): Doc =
+    stack(rules.map(Doc.str))
 
   def docTask(task: Task): Doc =
     Doc.str(task.term) / Doc.text(str = "where") + Doc.line + Doc.line +
-      docProgram(task.prog) + Doc.line
+      docRules(task.rules) + Doc.line
 
   def ppTask(task: Task): String =
     docTask(task).render(width = 80)
@@ -22,23 +22,21 @@ object PrettyPrinter {
   def docTree(tree: Tree): Doc =
     docNode(tree, tree(0)) + Doc.line
 
-  def docNode(tree: Tree, node: Node): Doc = {
+  def docNode(tree: Tree, node: Node): Doc =
     docContr(node.contr) +
       (if (node.parent.isEmpty) Doc.empty else Doc.line) +
       Doc.str(node.nodeId) + Doc.text(str = " : ") + Doc.str(node.term) +
       docBack(tree, node) +
       docChildren(tree, node).nested(amount = 4)
-  }
 
-  def docBack(tree: Tree, node: Node): Doc = {
+  def docBack(tree: Tree, node: Node): Doc =
     node.back match {
       case None => Doc.empty
       case Some(bId) =>
         Doc.line + Doc.text(str = "--> ") + Doc.str(bId)
     }
-  }
 
-  def docContr(oc: Option[Contraction]): Doc = oc match {
+  def docContr: Option[Contraction] => Doc = {
     case None =>
       Doc.empty
     case Some(c) =>

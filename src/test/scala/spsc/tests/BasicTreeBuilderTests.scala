@@ -1,20 +1,19 @@
 package spsc.tests
 
 import org.scalatest.FunSuite
-
-import spsc.Algebra._
+import spsc.SLLParsers.{parseTask, parseTerm}
 import spsc._
 
 class BasicTreeBuilderTests extends FunSuite {
 
-  def varAttackTrue(t: String): Unit = {
-    val e = SLLParsers.parseTerm(t)
-    assert(Tree.aVarIsUnderAttack(e))
+  def varAttackTrue(s: String): Unit = {
+    val term = parseTerm(s)
+    assert(Tree.aVarIsUnderAttack(term))
   }
 
   def varAttackFalse(s: String): Unit = {
-    val e = SLLParsers.parseTerm(s)
-    assert(!Tree.aVarIsUnderAttack(e))
+    val term = parseTerm(s)
+    assert(!Tree.aVarIsUnderAttack(term))
   }
 
   test(testName = "aVarIsUnderAttack") {
@@ -30,11 +29,15 @@ class BasicTreeBuilderTests extends FunSuite {
   val pAdd = "gAdd(Z,y)=y;gAdd(S(x),y)=S(gAdd(x,y));"
   val pAddAcc = "gAddAcc(Z,y)=y;gAddAcc(S(x),y)=gAddAcc(x,S(y));"
 
-  def drStep(prog: String, e: String, expected: String): Unit =
-    drStep0(SLLParsers.parseProg(prog), SLLParsers.parseTerm(e), expected)
+  def drStep(rules: String, t: String, expected: String): Unit = {
+    val given = t + " where " + rules
+    drStep0(parseTask(given), expected)
+  }
 
-  def drStep0(prog: Program, term: Term, expected: String): Unit = {
-    val builder = new BasicTreeBuilder(Task(term, prog))
+  def drStep0(task: Task, expected: String): Unit = {
+    val term = task.term
+    val rules = task.rules
+    val builder = new BasicTreeBuilder(Task(term, rules))
     val branches = builder.driveTerm(term)
     val branches_s = (branches map { case (exp, oc) =>
       "(" + exp.toString + "," +
@@ -44,25 +47,25 @@ class BasicTreeBuilderTests extends FunSuite {
   }
 
   test(testName = "101 Ctr") {
-    drStep(prog = "", e = "C(a,b)", expected = "(a,*)+(b,*)")
+    drStep(rules = "", t = "C(a,b)", expected = "(a,*)+(b,*)")
   }
 
   test(testName = "102 FCall") {
-    drStep(prog = "f(x)=x;", e = "f(A(z))", expected = "(A(z),*)")
+    drStep(rules = "f(x)=x;", t = "f(A(z))", expected = "(A(z),*)")
   }
 
   test(testName = "103 GCallCtr") {
-    drStep(prog = pAddAcc, e = "gAddAcc(S(S(Z)),Z)",
+    drStep(rules = pAddAcc, t = "gAddAcc(S(S(Z)),Z)",
       expected = "(gAddAcc(S(Z),S(Z)),*)")
   }
 
   test(testName = "104 GCallVar") {
-    drStep(prog = pAddAcc, e = "gAddAcc(a,b)",
+    drStep(rules = pAddAcc, t = "gAddAcc(a,b)",
       expected = "(b,a=Z)+(gAddAcc(x1,S(b)),a=S(x1))")
   }
 
   test(testName = "105 GCallGeneral") {
-    drStep(prog = pAddAcc, e = "gAddAcc(gAddAcc(a,b),c)",
+    drStep(rules = pAddAcc, t = "gAddAcc(gAddAcc(a,b),c)",
       expected = "(gAddAcc(b,c),a=Z)+(gAddAcc(gAddAcc(x1,S(b)),c),a=S(x1))")
   }
 

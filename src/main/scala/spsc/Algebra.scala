@@ -1,10 +1,12 @@
 package spsc
 
+import spsc.SLL._
+
 import scala.annotation.tailrec
 
 object Algebra {
 
-  type Subst = Map[String, Term]
+  type Subst = Map[Name, Term]
 
   def shellowEq(t1: CFG, t2: CFG): Boolean =
     t1.kind == t2.kind &&
@@ -16,29 +18,33 @@ object Algebra {
     case t: CFG => t.copy(args = t.args.map(applySubst(m)))
   }
 
-  def vars(term: Term): List[String] = (term: @unchecked) match {
+  // The result is `List[Name]`, rather than `Set[Name]`,
+  // in order to preserve the order in which the variables appear in the term.
+  // (Just to make the residual program more similar to the input one.)
+
+  def termVars(term: Term): List[Name] = (term: @unchecked) match {
     case v: Var => List(v.name)
     case t: CFG =>
-      (List[String]() /: t.args) { (ns, term) => (ns ::: vars(term)).distinct }
+      (List[Name]() /: t.args) { (ns, term) => (ns ::: termVars(term)).distinct }
   }
 
-  def names(term: Term): Set[String] = term match {
+  def termNames: Term => Set[Name] = {
     case Var(name) => Set(name)
     case CFG(kind, name, args) =>
-      (Set(name) /: args.map(names)) (_ ++ _)
+      (Set(name) /: args.map(termNames)) (_ ++ _)
     case Let(term0, bs) =>
-      ((names(term0) ++ bs.map(_._1)) /: bs.map(_._2).map(names))(_++_)
+      ((termNames(term0) ++ bs.map(_._1)) /: bs.map(_._2).map(termNames)) (_ ++ _)
   }
 
-  def names: Rule => Set[String] = {
-    case FRule (name, params, term) =>
-      Set(name) ++ params ++ names(term)
-    case GRule (name, pat, params, term) =>
-      Set(name) + pat.name ++ pat.params ++ params ++ names(term)
+  def ruleNames: Rule => Set[Name] = {
+    case FRule(name, params, term) =>
+      Set(name) ++ params ++ termNames(term)
+    case GRule(name, pat, params, term) =>
+      Set(name) + pat.name ++ pat.params ++ params ++ termNames(term)
   }
 
-  def names(task: Task) : Set[String] =
-    (names(task.term) /: task.prog.rules.map(names))(_++_)
+  def taskNames(task: Task): Set[Name] =
+    (termNames(task.term) /: task.rules.map(ruleNames)) (_ ++ _)
 
   def matchLoop(m: Subst): List[(Term, Term)] => Option[Subst] = {
     case Nil =>
@@ -68,12 +74,12 @@ object Algebra {
 
 // Generating variable names.
 
-class NameGen(val reserved: Seq[String]) {
+class NameGen(val reserved: Seq[Name]) {
   private var i: Int = 0
-  private val used = scala.collection.mutable.Set[String]() ++ reserved
+  private val used = scala.collection.mutable.Set[Name]() ++ reserved
 
   @tailrec
-  final def freshName(prefix: String): String = {
+  final def freshName(prefix: String): Name = {
     i += 1
     val name = prefix + i
     if (used.contains(name))

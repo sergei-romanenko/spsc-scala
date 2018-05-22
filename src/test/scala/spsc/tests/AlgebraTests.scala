@@ -2,6 +2,7 @@ package spsc.tests
 
 import org.scalatest.FunSuite
 import spsc.Algebra._
+import spsc.SLLParsers.parseTerm
 import spsc._
 
 class AlgebraTests extends FunSuite {
@@ -16,21 +17,21 @@ class AlgebraTests extends FunSuite {
   }
 
   test(testName = "201 applySubst") {
-    val e1 = SLLParsers.parseTerm("E1")
-    val e2 = SLLParsers.parseTerm("E2")
-    val e = SLLParsers.parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
+    val e1 = parseTerm("E1")
+    val e2 = parseTerm("E2")
+    val e = parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
     val subst = Map("x1" -> e1, "x2" -> e2)
     assert(applySubst(subst)(e).toString
       == "Cons(E1,Cons(E2,Cons(x3,Nil)))")
   }
 
   test(testName = "302 vars") {
-    val e = SLLParsers.parseTerm("A(x,B(y,z),a)")
-    assert(vars(e)
+    val t1 = parseTerm("A(x,B(y,z),a)")
+    assert(termVars(t1)
       == List("x", "y", "z", "a"))
 
-    val e1 = SLLParsers.parseTerm("A(x,B(y,x),a)")
-    assert(vars(e1)
+    val t2 = parseTerm("A(x,B(y,x),a)")
+    assert(termVars(t2)
       == List("x", "y", "a"))
   }
 
@@ -40,12 +41,12 @@ class AlgebraTests extends FunSuite {
     }
 
   def matchOK(pat: String, term: String, expected: String): Unit = {
-    val subst = matchAgainst(SLLParsers.parseTerm(pat), SLLParsers.parseTerm(term))
+    val subst = matchAgainst(parseTerm(pat), parseTerm(term))
     assert(substToString(subst).contains(expected))
   }
 
   def matchNo(pat: String, term: String): Unit = {
-    val subst = matchAgainst(SLLParsers.parseTerm(pat), SLLParsers.parseTerm(term))
+    val subst = matchAgainst(parseTerm(pat), parseTerm(term))
     assert(substToString(subst).isEmpty)
   }
 
@@ -81,20 +82,20 @@ class AlgebraTests extends FunSuite {
     matchNo(pat = "C(x,y,z)", term = "C(A,B)")
   }
 
-  def equivYes(e1: String, e2: String): Unit = {
-    assert(equiv(SLLParsers.parseTerm(e1), SLLParsers.parseTerm(e2)))
+  def equivYes(t1: String, t2: String): Unit = {
+    assert(equiv(parseTerm(t1), parseTerm(t2)))
   }
 
-  def equivNo(e1: String, e2: String): Unit = {
-    assert(!equiv(SLLParsers.parseTerm(e1), SLLParsers.parseTerm(e2)))
+  def equivNo(t1: String, t2: String): Unit = {
+    assert(!equiv(parseTerm(t1), parseTerm(t2)))
   }
 
   test(testName = "501 equiv") {
-    equivYes(e1 = "gA(fB(x,y),C)", e2 = "gA(fB(a,b),C)")
+    equivYes(t1 = "gA(fB(x,y),C)", t2 = "gA(fB(a,b),C)")
   }
 
   test(testName = "502 equiv") {
-    equivNo(e1 = "gA(fB(x,y),x)", e2 = "gA(fB(a,a),b)")
+    equivNo(t1 = "gA(fB(x,y),x)", t2 = "gA(fB(a,a),b)")
   }
 
   test(testName = "NameGen") {
@@ -106,7 +107,7 @@ class AlgebraTests extends FunSuite {
   test(testName = "taskNames") {
     val sTask = "a where f(x)=x; g(C(p),q) = f(R(p,q));"
     val task = SLLParsers.parseTask(sTask)
-    val ns = names(task).toList.sortWith(_<_)
+    val ns = taskNames(task).toList.sortWith(_<_)
     assert(ns.mkString(",") == "C,R,a,f,g,p,q,x")
   }
 }

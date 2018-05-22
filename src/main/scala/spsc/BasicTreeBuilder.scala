@@ -1,13 +1,33 @@
 package spsc
 
 import scala.annotation.tailrec
+
+import SLL._
 import Algebra._
 import Tree._
 
 class BasicTreeBuilder(task: Task) {
 
+  val getF: Map[Name, FRule] =
+    (task.rules :\ Map[Name, FRule]()) {
+      case (r: FRule, m) => m + (r.name -> r);
+      case (_, m) => m
+    }
+
+  val getG: Map[(Name, Name), GRule] =
+    (task.rules :\ Map[(Name, Name), GRule]()) {
+      case (r: GRule, m) => m + ((r.name, r.pat.name) -> r)
+      case (_, m) => m
+    }
+
+  val getGs: Map[Name, List[GRule]] =
+    (task.rules :\ Map[Name, List[GRule]]()) {
+      case (r: GRule, m) => m + (r.name -> (r :: m.getOrElse(r.name, Nil)))
+      case (_, m) => m
+    }
+
   def initNameGen: NameGen =
-    new NameGen(names(task).toSeq)
+    new NameGen(taskNames(task).toSeq)
 
   protected val ng: NameGen = initNameGen
 
@@ -24,16 +44,16 @@ class BasicTreeBuilder(task: Task) {
     case Ctr(name, args) =>
       args.map((_, None))
     case FCall(name, args) =>
-      val f = task.prog.f(name)
+      val f = getF(name)
       val subst = Map(f.params.zip(args): _*)
       List((applySubst(subst)(f.term), None))
     case GCall(name, arg0 :: args) => arg0 match {
       case Ctr(cname, cargs) =>
-        val g = task.prog.g(name, cname)
+        val g = getG(name, cname)
         val subst = Map(g.allParams.zip(cargs ::: args): _*)
         List((applySubst(subst)(g.term), None))
       case v: Var =>
-        for (g <- task.prog.gs(name)) yield {
+        for (g <- getGs(name)) yield {
           val p1 = g.pat.copy(params = g.pat.params.map(ng.freshName))
           val c = Some(Contraction(v.name, p1))
           val cargs1 = p1.params.map(Var)
@@ -81,12 +101,11 @@ class BasicTreeBuilder(task: Task) {
   // -- The main loop.
 
   @tailrec
-  private def buildLoop(t: Tree): Tree = {
+  private def buildLoop(t: Tree): Tree =
     t.leaves.find(!t.isProcessed(_)) match {
       case None => t
       case Some(b) => buildLoop(buildStep(t, b))
     }
-  }
 
   def buildProcessTree(): Tree =
     buildLoop(Tree.create(task.term))

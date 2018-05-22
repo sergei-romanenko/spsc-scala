@@ -1,23 +1,24 @@
 package spsc
 
-import Algebra._
+import spsc.SLL._
 
 class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task) {
+
   val msgen = new MSGen(ng)
 
   def abstractNode(t: Tree, a: Node, term: Term,
-                   bs: List[(String, Term)]): Tree = {
+                   bs: List[(Name, Term)]): Tree =
     t.decompose(a, term, bs)
-  }
 
-  def splitNode(t: Tree, n: Node): Tree = (n.term: @unchecked) match {
-    case term: CFG =>
-      val ns = term.args.map(_ => ng.freshName(prefix = "v"))
-      val term1 = term.copy(args = ns.map(Var))
-      val bs = ns.zip(term.args)
-      t.decompose(n, term1, bs)
+  def splitNode(t: Tree, n: Node): Tree =
+    (n.term: @unchecked) match {
+      case term: CFG =>
+        val ns = term.args.map(_ => ng.freshName(prefix = "v"))
+        val term1 = term.copy(args = ns.map(Var))
+        val bs = ns.zip(term.args)
+        t.decompose(n, term1, bs)
 
-  }
+    }
 
   def generalizeAlphaOrSplit(t: Tree, b: Node, a: Node): Tree = {
     val g: Gen = msgen.msg(a.term, b.term)
@@ -29,7 +30,7 @@ class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task) {
     }
   }
 
-  override def buildStep(t: Tree, b: Node): Tree = {
+  override def buildStep(t: Tree, b: Node): Tree =
     t.findFuncAncestor(b) match {
       case Some(a) =>
         t.setBack(b, a)
@@ -46,6 +47,5 @@ class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task) {
             }
         }
     }
-  }
 
 }
