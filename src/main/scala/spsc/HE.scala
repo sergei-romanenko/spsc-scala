@@ -13,7 +13,7 @@ object HE {
   }
 
   private def heByCoupling: (Term, Term) => Boolean = {
-    case (e1:CFG, e2:CFG) if shellowEq(e1, e2) =>
+    case (e1:CFG, e2:CFG) if shallowEq(e1, e2) =>
       (e1.args, e2.args).zipped.forall(embeddedIn)
     case (Var(_), Var(_)) => true
     case _ => false

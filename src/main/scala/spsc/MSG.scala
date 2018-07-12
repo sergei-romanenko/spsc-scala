@@ -25,7 +25,7 @@ class MSGen(val ng: NameGen) {
   def commonFun(g: Gen): Gen = {
     for (n <- g.m1.keys)
       (g.m1(n), g.m2(n)) match {
-        case (t1: CFG, t2: CFG) if shellowEq(t1, t2) =>
+        case (t1: CFG, t2: CFG) if shallowEq(t1, t2) =>
           val ns = t1.args.map(_ => ng.freshName(prefix = "v"))
           val t = applySubst(Map(n -> t1.copy(args = ns.map(Var))))(g.t)
           return Gen(t,

@@ -1,8 +1,7 @@
-package spsc.tests
+package spsc
 
 import org.scalatest.FunSuite
 import spsc.SLLParsers.parseTask
-import spsc._
 
 class ResTaskGenTests extends FunSuite {
 

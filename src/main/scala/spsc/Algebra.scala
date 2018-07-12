@@ -8,7 +8,7 @@ object Algebra {
 
   type Subst = Map[Name, Term]
 
-  def shellowEq(t1: CFG, t2: CFG): Boolean =
+  def shallowEq(t1: CFG, t2: CFG): Boolean =
     t1.kind == t2.kind &&
       t1.name == t2.name &&
       t1.args.length == t2.args.length
@@ -55,7 +55,7 @@ object Algebra {
           case None => matchLoop(m + (v.name -> t2))(tl)
           case Some(t0) => if (t2 == t0) matchLoop(m)(tl) else None
         }
-        case (t1: CFG, t2: CFG) if shellowEq(t1, t2) =>
+        case (t1: CFG, t2: CFG) if shallowEq(t1, t2) =>
           matchLoop(m)((t1.args zip t2.args) ::: tl)
         case _ => None
       }

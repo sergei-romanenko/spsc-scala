@@ -1,10 +1,8 @@
-package spsc.tests
+package spsc
 
 import org.scalatest.FunSuite
-import spsc._
-
-import SLLParsers.parseTask
-import SLLCheck.checkTask
+import spsc.SLLCheck.checkTask
+import spsc.SLLParsers.parseTask
 
 class SLLCheckTests extends FunSuite {
 

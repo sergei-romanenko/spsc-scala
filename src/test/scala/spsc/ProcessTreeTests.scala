@@ -1,7 +1,6 @@
-package spsc.tests
+package spsc
 
 import org.scalatest.FunSuite
-import spsc._
 import spsc.Tree._
 
 class ProcessTreeTests extends FunSuite {

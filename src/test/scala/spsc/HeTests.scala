@@ -1,9 +1,8 @@
-package spsc.tests
+package spsc
 
 import org.scalatest.FunSuite
 import spsc.HE._
 import spsc.SLLParsers.parseTerm
-import spsc._
 
 class HeTests extends FunSuite {
 
