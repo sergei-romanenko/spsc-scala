@@ -1,0 +1,13 @@
+-- Information propagation.
+-- The result to be produced:
+
+-- g21(a)
+-- where
+--
+-- g21(C(x1))=C(x1);
+
+g2(g1(a), a)
+where
+
+g1(C(x)) = B();
+g2(B(), x) = x;

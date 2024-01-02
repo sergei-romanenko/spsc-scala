@@ -12,4 +12,4 @@ add(a, a)
 where
 
 add(Z, y) = y;
-add(S(x), y)=S(add(x, y));
+add(S(x), y) = S(add(x, y));

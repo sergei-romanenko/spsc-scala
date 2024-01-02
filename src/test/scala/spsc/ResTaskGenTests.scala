@@ -68,6 +68,9 @@ addAcc(S(x),y) = addAcc(x,S(y));
       "addAcc1(a,b) where " +
         "addAcc1(Z,b)=b;" +
         "addAcc1(S(x1),b)=addAcc1(x1,S(b));")
+  
+    testBScp("g2(g1(a),a)", "g1(C(x)) = B; g2(B,x) = x;",
+      "g21(a) where g21(C(x1))=C(x1);")
   }
 
   // Advanced supercompiler
