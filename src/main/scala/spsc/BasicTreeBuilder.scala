@@ -9,19 +9,19 @@ import Tree._
 class BasicTreeBuilder(task: Task) {
 
   val getF: Map[Name, FRule] =
-    (task.rules :\ Map[Name, FRule]()) {
+    task.rules.foldRight(Map[Name, FRule]()) {
       case (r: FRule, m) => m + (r.name -> r);
       case (_, m) => m
     }
 
   val getG: Map[(Name, Name), GRule] =
-    (task.rules :\ Map[(Name, Name), GRule]()) {
+    task.rules.foldRight(Map[(Name, Name), GRule]()) {
       case (r: GRule, m) => m + ((r.name, r.pat.name) -> r)
       case (_, m) => m
     }
 
   val getGs: Map[Name, List[GRule]] =
-    (task.rules :\ Map[Name, List[GRule]]()) {
+    task.rules.foldRight(Map[Name, List[GRule]]()) {
       case (r: GRule, m) => m + (r.name -> (r :: m.getOrElse(r.name, Nil)))
       case (_, m) => m
     }

@@ -40,7 +40,7 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
 
   def nodesAcc(node: Node, acc: Stream[Node]): Stream[Node] = {
     val children = node.children.map(getNode)
-    node #:: (children :\ acc) (nodesAcc)
+    node #:: children.foldRight(acc) (nodesAcc)
   }
 
   def nodes: Stream[Node] =
@@ -114,11 +114,11 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
   def subnodeIds(n: Node): Set[NodeId] = {
     val chIdSet = n.children.toSet
     val subIdSets = n.children.map(getNode andThen subnodeIds)
-    (chIdSet /: subIdSets) (_.union(_))
+    subIdSets.foldLeft(chIdSet) (_.union(_))
   }
 
   def removeSubnodes(m: NodeMap, n: Node): NodeMap =
-    (m /: subnodeIds(n)) (_ - _)
+    subnodeIds(n).foldLeft(m) (_ - _)
 
   def replaceSubtree(n: Node, term: Term): (Tree, Node) = {
     val n1 = n.copy(term = term, children = Nil)
@@ -194,7 +194,7 @@ object Tree {
   }
 
   def treeNames(tree: Tree): Set[Name] =
-    (Set[Name]() /: tree.nodes.map(nodeNames)) (_ ++ _)
+    tree.nodes.map(nodeNames).foldLeft(Set[Name]()) (_ ++ _)
 
   // Initial tree.
 

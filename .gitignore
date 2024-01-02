@@ -10,3 +10,7 @@ bin/
 /src/main/scala/spsc/*.sc
 /tasks/*.tree
 /tasks/*.res
+.bloop
+.metals
+.vscode
+.bsp

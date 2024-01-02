@@ -25,15 +25,15 @@ object Algebra {
   def termVars(term: Term): List[Name] = (term: @unchecked) match {
     case v: Var => List(v.name)
     case t: CFG =>
-      (List[Name]() /: t.args) { (ns, term) => (ns ::: termVars(term)).distinct }
+      t.args.foldLeft(List[Name]()) { (ns, term) => (ns ::: termVars(term)).distinct }
   }
 
   def termNames: Term => Set[Name] = {
     case Var(name) => Set(name)
     case CFG(kind, name, args) =>
-      (Set(name) /: args.map(termNames)) (_ ++ _)
+      args.map(termNames).foldLeft(Set(name)) (_ ++ _)
     case Let(term0, bs) =>
-      ((termNames(term0) ++ bs.map(_._1)) /: bs.map(_._2).map(termNames)) (_ ++ _)
+      bs.map(_._2).map(termNames).foldLeft((termNames(term0) ++ bs.map(_._1))) (_ ++ _)
   }
 
   def ruleNames: Rule => Set[Name] = {
@@ -44,7 +44,7 @@ object Algebra {
   }
 
   def taskNames(task: Task): Set[Name] =
-    (termNames(task.term) /: task.rules.map(ruleNames)) (_ ++ _)
+    task.rules.map(ruleNames).foldLeft(termNames(task.term)) (_ ++ _)
 
   def matchLoop(m: Subst): List[(Term, Term)] => Option[Subst] = {
     case Nil =>

@@ -1,4 +1,4 @@
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.18"
 
 name := "spsc-scala"
 
@@ -12,8 +12,8 @@ libraryDependencies += "org.typelevel" %% "paiges-core" % "0.2.0"
 
 scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked")
 
-testOptions in Test += Tests.Argument(args= "-oD")
+Test / testOptions += Tests.Argument(args= "-oD")
 
-logBuffered in Test := false
+Test / logBuffered := false
 
-parallelExecution in Test := false
+Test / parallelExecution := false
